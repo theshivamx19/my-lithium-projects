@@ -11,7 +11,7 @@ const BlogController=require("../controller/blogController")
 
 //1
 router.post("/authors",authorController.authorData)
-router.post('/createBlog', aut)
+ 
 router.post("/createNewBlog",BlogController.createNewBlog)
 
  

@@ -1,4 +1,4 @@
-const blogModel = require('../controllers/blogModel')
+const blogModel = require('../models/blogModel')
 const ObjectId = require('mongoose').Types.ObjectId
 
 
