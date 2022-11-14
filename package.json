@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/shivamgupta83/blogproject/issues"
   },
-  "homepage": "https://github.com/shivamgupta83/blogproject#readme"
+  "homepage": "https://github.com/shivamgupta83/blogproject#readme",
+  "dependencies": {
+    "body-parser": "^1.20.1",
+    "express": "^4.18.2",
+    "nodemon": "^2.0.20"
+  }
 }
