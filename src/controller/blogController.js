@@ -1,4 +1,34 @@
 const blogModel = require('../controllers/blogModel')
+const ObjectId = require('mongoose').Types.ObjectId
+
+let createNewBlog=async function(req,res){
+    try{  
+    let data=req.body
+    let { title, body, authorId, tags, category, subcategory, isPublished }=data
+  
+    
+    if(!title || !body || !authorId || !tags || !category || !subcategory || !isPublished)
+     return res.status(400).send("All fields are required.") 
+  
+   
+    if(!data.authorId)
+    return res.status(400).send("AuthorId is required.")
+   
+    if(!ObjectId.isValid(data.authorId))
+    return res.status(400).send({status:false,msg:"auhtorId is invalid."})
+  
+    let findAuthor=await AuthorModel.findById(data.authorId)
+    if(!findAuthor)
+    return res.status(404).send("Author with the given AuthorId does not exists.")
+  
+  
+     let saveData=await BlogModel.create(data)
+     res.status(201).send({status:true,msg:saveData})
+  }catch(error){
+      return res.status(500).send({msg:error.message})
+  }
+  }
+  
 
 const createBlog = async function(req, res){
     try{
@@ -44,3 +74,4 @@ const getBlogs = async function (req, res) {
 module.exports.getAllBlogs = getAllBlogs
 module.exports.getBlogs = getBlogs
 module.exports.createBlog = createBlog
+module.exports.createNewBlog=createNewBlog
