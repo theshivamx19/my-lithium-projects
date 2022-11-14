@@ -10,6 +10,7 @@ const authorModel = require("../controller/authorController")
 
 //1
 router.post("/authors",authorModel.authorData)
+router.post('/createBlog', aut)
 
 
  
