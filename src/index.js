@@ -8,24 +8,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-mongoose.connect("mongodb+srv://123:1234@cluster0.pf4v08v.mongodb.net/test-03", {
+mongoose.connect("mongodb+srv://123:1234@cluster0.pf4v08v.mongodb.net/project01", {
     useNewUrlParser: true
 })
 .then( () => console.log("MongoDb is connected"))
 .catch ( err => console.log(err) )
 
- 
-
- // 1st global middilware
-const requestLogger = (request, response, next) => {
-
-    console.log(`${request.method} url:: ${request.url}`);
-    next()
-}
-app.use(requestLogger)
-
-
- 
+  
 
 app.use('/', route);
 
