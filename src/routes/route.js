@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
  
-const authorModel = require("../controller/authorController")
+const authorController = require("../controller/authorController")
+const BlogController=require("../controller/blogController")
 // const blogModel = require("../models/blogModel")
 
 
@@ -9,9 +10,9 @@ const authorModel = require("../controller/authorController")
 //api's
 
 //1
-router.post("/authors",authorModel.authorData)
- 
-
+router.post("/authors",authorController.authorData)
+router.post('/createBlog', aut)
+router.post("/createNewBlog",BlogController.createNewBlog)
 
  
 
@@ -27,3 +28,5 @@ router.post("/authors",authorModel.authorData)
 
 
 module.exports = router;
+
+// modified

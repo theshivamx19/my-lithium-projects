@@ -21,7 +21,7 @@ const authorData = async function (req, res) {
       }
 
 // validation performing
-      if (!isValid(fname) || !isValid(lname) || !isValid(title) || !isValid(email) ||!isValid(password)) {
+if (!isValid(fname) || !isValid(lname) || !isValid(title) || !isValid(email) ||!isValid(password)) {
          return res.status(400).send({ msg: "somthing is invalid" })
       }
 
@@ -32,10 +32,10 @@ const authorData = async function (req, res) {
       if (!reg.test(email)) { return res.status(400).send({ msg: "emailid is not valid" }) }
 
 
-      // cheking emailid in data base   
+  // cheking emailid in data base   
       let emailCheck = await authorModel.findOne({ email: email })
 
-      // if email is present then       
+ // if email is present then       
       if (emailCheck) return res.status(400).send({ msg: "emailid is used" })
 
 
