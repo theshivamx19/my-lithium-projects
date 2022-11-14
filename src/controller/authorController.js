@@ -5,7 +5,7 @@
  const authorData= async function(req,res){
 
 
-    // distructuring from body
+     
  try  { let {email,fname,lname,title,password} = req.body
 
 
