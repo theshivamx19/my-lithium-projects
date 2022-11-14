@@ -35,7 +35,8 @@ blogSchema=new mongoose.Schema({
     },
 
     publishedAt:  { 
-        type : Date
+        type : Date,
+        
      },
 
     isPublished: {
