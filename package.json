@@ -1,0 +1,19 @@
+{
+  "name": "blockproject",
+  "version": "1.0.0",
+  "description": "blogproject",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shivamgupta83/blogproject.git"
+  },
+  "author": "shivamgupta",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shivamgupta83/blogproject/issues"
+  },
+  "homepage": "https://github.com/shivamgupta83/blogproject#readme"
+}
