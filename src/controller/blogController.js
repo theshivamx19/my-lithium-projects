@@ -1,6 +1,8 @@
 const AuthorModel=require('../models/authorModel')
 const BlogModel=require('../models/blogModel')
 const ObjectId = require('mongoose').Types.ObjectId 
+
+ let createNewBlog=async function(req,res){
     try{  
     let data=req.body
     let { title, body, authorId, tags, category, subcategory, isPublished }=data
@@ -25,6 +27,7 @@ const ObjectId = require('mongoose').Types.ObjectId
   }catch(error){
       return res.status(500).send({msg:error.message})
   }
+}
   
   
 
