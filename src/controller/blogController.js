@@ -2,27 +2,25 @@ const BlogModel = require('../models/blogModel')
 const AuthorModel=require('../models/authorModel')
 const ObjectId = require('mongoose').Types.ObjectId
 
-
-// Author Creation  
+  
 let createNewBlog=async function(req,res){
     try{  
     let data=req.body
     let { title, body, authorId, tags, category, subcategory, isPublished }=data
-  
+
+    if(Object.keys(data).length==0)
+    return res.status(400).send({status:false,msg:"Data is required to create a blog."})
     
     if(!title || !body || !tags || !category || !subcategory )
      return res.status(400).send("All fields are required.") 
   
-   
-    if(!data.authorId)
-    return res.status(400).send("AuthorId is required.")
-   
-    if(!ObjectId.isValid(data.authorId))
+
+    if(!ObjectId.isValid(authorId))
     return res.status(400).send({status:false,msg:"auhtorId is invalid."})
   
-    let findAuthor=await AuthorModel.findById(data.authorId)
+    let findAuthor=await AuthorModel.findById(authorId)
     if(!findAuthor)
-    return res.status(404).send("Author with the given AuthorId does not exists.")
+    return res.status(404).send({status:false,msg:"Author with the given AuthorId does not exists."})
   
   
      let saveData=await BlogModel.create(data)
@@ -33,11 +31,11 @@ let createNewBlog=async function(req,res){
   }
   
 
-const getAllBlogs = async function (req, res) {
+  const getAllBlogs = async function (req, res) {
     try {
-        const blogs = await BlogModel.find()
+        const blogs = await blogModel.find({isDeleted : false, isPublished : true})
         if(!blogs){
-            return res.status(404).send({status : false, msg : 'No data exists'})  
+            return res.status(404).send({status : false, msg : 'No data exists'})
         }
         return res.status(200).send({ status: true, data: blogs })
     }
@@ -49,18 +47,22 @@ const getAllBlogs = async function (req, res) {
 
 const getBlogs = async function (req, res) {
     try {
-        const data = req.query
-        const {authorId, category, tag, subCategory} = data
-        if(!data){
+        let data = req.query
+        let {authorId, category, tags, subcategory} = data
+        if(Object.keys(data).length==0){
             return res.status(400).send({status : false, msg : 'Data is required to find blog'})
         }
-        const findBlog = await BlogModel.findOne({ _id: authorId } || { category: category } || { tag: tag } || { subCategory: subCategory })
+        let findBlog = await blogModel.find({$or : [{_id : authorId}, {category : category}, {subcategory : subcategory}, {tags : tags}]} )
+        if(!findBlog){
+            return res.status(404).send({status : false, msg : 'No such blog exists'})
+        }
         return res.status(200).send({ status: true, data: findBlog })
     }
     catch (err) {
         return res.status(500).send({ status: false, error: err.message })
     }
 }
+
 
 module.exports.getAllBlogs = getAllBlogs
 module.exports.getBlogs = getBlogs

@@ -7,12 +7,10 @@ const BlogController=require("../controller/blogController")
 
 
 
-//api's
 
-//1
 // router.post("/authors",authorController.authorData)
 router.post("/blogs",BlogController.createNewBlog)
-router.get("/getBlogs",BlogController.getAllBlogs)
+router.get("/getAllBlogs",BlogController.getAllBlogs)
 
  
 
