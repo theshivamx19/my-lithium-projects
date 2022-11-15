@@ -9,10 +9,14 @@ const authorSchema= new mongoose.Schema({
 
     fname: {
         type : String,
-        require:true  },
+        require:true ,
+        trim : true 
+     },
 
     lname: {type : String,
-        require:true },
+        require:true,
+        trim : true
+         },
 
     title: { type : String,
         enum : ["Mr", "Mrs", "Miss"],

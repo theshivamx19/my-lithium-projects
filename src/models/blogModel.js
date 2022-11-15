@@ -38,6 +38,10 @@ blogSchema=new mongoose.Schema({
         type : Date,
         
      },
+     deletedAt:  { 
+        type: Date , 
+        default: null
+             },
 
     isPublished: {
         type : Boolean,
