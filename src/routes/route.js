@@ -8,15 +8,8 @@ const BlogController=require("../controller/blogController")
 
 
 
-// router.post("/authors",authorController.authorData)
 router.post("/blogs",BlogController.createNewBlog)
 router.get("/getAllBlogs",BlogController.getAllBlogs)
 
- 
-
-
-
-
-module.exports = router;
 
 
