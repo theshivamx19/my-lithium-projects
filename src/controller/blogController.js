@@ -30,7 +30,7 @@ const ObjectId = require('mongoose').Types.ObjectId
 
   const getAllBlogs = async function (req, res) {
     try {
-        const blogs = await blogModel.find({isDeleted : false, isPublished : true})
+        const blogs = await BlogModel.find({isDeleted : false, isPublished : true})
         if(!blogs){
             return res.status(404).send({status : false, msg : 'No data exists'})
         }
@@ -49,7 +49,7 @@ const getBlogs = async function (req, res) {
         if(Object.keys(data).length==0){
             return res.status(400).send({status : false, msg : 'Data is required to find blog'})
         }
-        let findBlog = await blogModel.find({$or : [{_id : authorId}, {category : category}, {subcategory : subcategory}, {tags : tags}]} )
+        let findBlog = await BlogModel.find({$or : [{_id : authorId}, {category : category}, {subcategory : subcategory}, {tags : tags}]} )
         if(!findBlog){
             return res.status(404).send({status : false, msg : 'No such blog exists'})
         }
