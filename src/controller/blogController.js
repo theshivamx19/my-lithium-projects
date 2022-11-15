@@ -103,16 +103,16 @@ const deleteBlog = async function (req, res) {
         }
 
         const findBlog = await BlogModel.findById(blogId)
-        if (!findBlog) { return res.status(404).send({ status: true, msg: "" }) }
+        if (!findBlog) { return res.status(404).send({ status: false, msg: "" }) }
 
 
-        const blogData = await BlogModel.findByIdAndUpdate(blogId, {
+          await BlogModel.findByIdAndUpdate(blogId, {
             $set: {
                 isDeleted: false,
                 deletedAt: new Date()
             }
         }, { new: true })
-        return res.status(200).send({ msg: "deleted", blogData })
+        return res.status(200).send({ msg:" " })
 
     }
     catch (err) {
@@ -127,7 +127,10 @@ let deleteAllBlogs = async function (req, res) {
     try {
         let data = req.query
         data.isDeleted=false
-        
+         
+        let findBlogs = await BlogModel.find(req.query)
+       if (findBlogs.length==0) return res.status(404).send({ status: false, msg: " " })
+
         let deleteBlogs = await BlogModel.updateMany(data,{ isDeleted: true, deletedAt: new Date() })
         return res.status(200).send({ status: true, deleteBlogs, msg: "blogs deleted successfully." })
     } catch (error) {
