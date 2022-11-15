@@ -34,9 +34,14 @@ blogSchema=new mongoose.Schema({
         default: false
     },
 
+    deleteddAt:  { 
+        type : Date,
+        default:null
+     },
+
     publishedAt:  { 
         type : Date,
-        
+        default:null
      },
      deletedAt:  { 
         type: Date , 

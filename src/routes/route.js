@@ -17,8 +17,15 @@ const BlogController=require("../controller/blogController")
 // router.get("/blogs/:blogId",BlogController.deleteBlog)
 
 //put
-router.put("/blogs/:blogId",BlogController.updateAllBlogs)
+// router.put("/blogs/:blogId",BlogController.updateAllBlogs)
 
 // router.post("/blogs",BlogController.deleteAllBlogs)
 
-module.exports=router
+ 
+router.post("/blogs",BlogController.createNewBlog)
+router.get("/getAllBlogs",BlogController.getAllBlogs)
+router.get("/getBlogs",BlogController.getTBlogs)
+router.delete("/deleteBlogs",BlogController.deleteAllBlogs)
+router.put("/updateBlogs/blogs/:blogId",BlogController.updateBlog)
+
+module.exports=router  
