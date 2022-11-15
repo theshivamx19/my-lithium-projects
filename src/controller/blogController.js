@@ -1,5 +1,6 @@
 const AuthorModel=require('../models/authorModel')
-const ObjectId = require('mongoose').Types.ObjectId
+const BlogModel=require('../models/blogModel')
+const ObjectId = require('mongoose').Types.ObjectId 
     try{  
     let data=req.body
     let { title, body, authorId, tags, category, subcategory, isPublished }=data
