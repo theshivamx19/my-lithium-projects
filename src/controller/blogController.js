@@ -126,8 +126,9 @@ const deleteBlog = async function (req, res) {
 let deleteAllBlogs = async function (req, res) {
     try {
         let data = req.query
-
-        let deleteBlogs = await BlogModel.updateMany(data, { isDeleted: false, deletedAt: new Date() })
+        data.isDeleted=false
+        
+        let deleteBlogs = await BlogModel.updateMany(data,{ isDeleted: true, deletedAt: new Date() })
         return res.status(200).send({ status: true, deleteBlogs, msg: "blogs deleted successfully." })
     } catch (error) {
         return res.status(500).send({ msg: error.message })
