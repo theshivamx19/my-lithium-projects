@@ -1,10 +1,9 @@
- 
 const AuthorModel = require('../models/authorModel')
 const BlogModel = require('../models/blogModel')
 const ObjectId = require('mongoose').Types.ObjectId
 
 
-// Blog Creation...
+// CREATING NEW BLOGS
 let createNewBlog = async function (req, res) {
     try {
         let data = req.body
@@ -33,7 +32,7 @@ let createNewBlog = async function (req, res) {
 }
 
 
-// Get/blogs 
+ //GET ALL BLOG BY { isDeleted: false, isPublished: true }
 const getAllBlogs = async function (req, res) {
     try {
         const blogs = await BlogModel.find({ isDeleted: false, isPublished: true })
@@ -49,35 +48,29 @@ const getAllBlogs = async function (req, res) {
 }
 
 
-  const getTBlogs=async function(req,res){
-        try{
-    let {authorId,category,tags,subcategory}=req.query
-    let findBlogs=await BlogModel.find(req.query).populate('authorId')
-    res.send({msg:findBlogs})
- }catch(error){
-    res.status(500).send({status:false,msg:error.message})
- }
-}
-
-let deleteAllBlogs = async function (req, res) {
+//GET ALL BLOG BY QUERY PARAMS {authorId,category,tags,subcategory}=req.query
+const getTBlogs = async function (req, res) {
     try {
-        let data = req.query
-
-        let deleteBlogs = await BlogModel.updateMany(data, { isDeleted: true, deletedAt: new Date() })
-        return res.status(200).send({ status: true, msg: "blogs deleted successfully." })
+        // let { authorId, category, tags, subcategory } = req.query
+        let findBlogs = await BlogModel.find(req.query).populate('authorId')
+        res.send({ msg: findBlogs })
     } catch (error) {
-        return res.status(500).send({ msg: error.message })
-
-
-
+        res.status(500).send({ status: false, msg: error.message })
     }
 }
 
+
+// UPDATING BLOG BY TAGS  CATEGORY SUB-COTEGORY ETC 
 let updateBlog = async function (req, res) {
     try {
-        let blogId = req.params.blogId
-        let data = req.body;
+            const blogId = req.params.blogId;
+            let data = req.body;
 
+        if (!mongoose.isValidObjectId(blogId)) {
+              return res.status(400).send({ status: false, msg: 'Invalid Object Id' })
+            }
+       
+         
         let blog = await BlogModel.findById(blogId)
         if (!blog) return res.status(404).send({ status: false, msg: "Blog does not exist." })
 
@@ -100,6 +93,7 @@ let updateBlog = async function (req, res) {
 
 
 
+// DELETING BOLOG BY PATH PARAMS
 const deleteBlog = async function (req, res) {
     try {
 
@@ -108,12 +102,11 @@ const deleteBlog = async function (req, res) {
             return res.status(400).send({ status: false, msg: 'Invalid Object Id' })
         }
 
-
-        const findBlog = await blogModel.findById(blogId)
+        const findBlog = await BlogModel.findById(blogId)
         if (!findBlog) { return res.status(404).send({ status: true, msg: "" }) }
 
 
-        const blogData = await blogModel.findByIdAndUpdate(blogId, {
+        const blogData = await BlogModel.findByIdAndUpdate(blogId, {
             $set: {
                 isDeleted: false,
                 deletedAt: new Date()
@@ -127,22 +120,25 @@ const deleteBlog = async function (req, res) {
     }
 }
 
-// let deleteAllBlogs = async function (req, res) {
-//     try {
-//         let data = req.query
-
-//         let deleteBlogs = await blogModel.updateMany(data, { isDeleted: false, deletedAt: new Date() })
-//         return res.status(200).send({ status: true, deleteBlogs, msg: "blogs deleted successfully." })
-//     } catch (error) {
-//         return res.status(500).send({ msg: error.message })
-
-//     }
-// }
 
 
+// DELETING BOLOG BY  QUERY PARAMS AND BY QWERY PARAMS WE HAVE TO DELETE BLOGS
+let deleteAllBlogs = async function (req, res) {
+    try {
+        let data = req.query
+
+        let deleteBlogs = await BlogModel.updateMany(data, { isDeleted: false, deletedAt: new Date() })
+        return res.status(200).send({ status: true, deleteBlogs, msg: "blogs deleted successfully." })
+    } catch (error) {
+        return res.status(500).send({ msg: error.message })
+
+    }
+}
+
+
+// WRITE AND WORKING CODE==>
 
 // const updateAllBlogs = async function (req, res) {
-
 
 //     const { title, body, tags, subCategory } = req.body
 //     const blogId = req.params.blogId
@@ -150,12 +146,12 @@ const deleteBlog = async function (req, res) {
 //     if (!mongoose.isValidObjectId(blogId)) {
 //         return res.status(400).send({ status: false, msg: 'Invalid Object Id' })
 //     }
-//     const findBlog1 = await blogModel.findById(blogId)
+//     const findBlog1 = await BlogModel.findById(blogId)
 //     if (!findBlog1) { return res.status(404).send({ status: true, msg: "" }) }
 
 
 
-//     const findBlog = await blogModel.findById(blogId1)
+//     const findBlog = await BlogModel.findById(blogId1)
 //     const tagsData = findBlog.tags
 //     const subcategryData = findBlog.subCategory
 //     tagsData.push(tags)
@@ -179,24 +175,26 @@ const deleteBlog = async function (req, res) {
 
 
 
-
+//1
 module.exports.createNewBlog = createNewBlog
 
-
+//2
 module.exports.getAllBlogs = getAllBlogs
 
+//3
+module.exports.getTBlogs = getTBlogs
 
-module.exports.getTBlogs=getTBlogs
+//4
+module.exports.updateBlog = updateBlog
 
-
+//5
 module.exports.deleteAllBlogs = deleteAllBlogs
 
- 
- 
+//6
 module.exports.deleteBlog = deleteBlog
- 
+
+
 // module.exports.updateAllBlogs = updateAllBlogs
- 
- 
-module.exports.updateBlog = updateBlog
- 
+
+
+

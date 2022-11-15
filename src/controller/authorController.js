@@ -2,7 +2,7 @@ const authorModel = require("../models/authorModel")
 
 
 
-
+// CREATING AUTHER
 const authorData = async function (req, res) {
 
    try {
