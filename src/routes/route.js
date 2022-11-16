@@ -22,20 +22,22 @@ const middilewares = require('../middlewares/auth')
  router.get("/getBlogs",middilewares.authenticate,BlogController.getTBlogs)
 
 // UPDATING BLOG BY TAGS  CATEGORY SUB-COTEGORY ETC 
- router.put("/updateBlogs/blogs/:blogId",middilewares.authenticate,BlogController.updateBlog)
+ router.put("/updateBlogs/blogs/:blogId",middilewares.authenticate,middilewares.Authorisation,BlogController.updateBlog)
 
 // DELETING BOLOG BY PATH PARAMS
-router.delete("/blogs/:blogId",middilewares.authenticate,BlogController.deleteBlog)
+router.delete("/blogs/:blogId",middilewares.authenticate,middilewares.Authorisation,BlogController.deleteBlog)
 
 // DELETING BOLOG BY  QUERY PARAMS AND BY QWERY PARAMS WE HAVE TO DELETE BLOGS
-router.delete("/deleteBlogs/",middilewares.authenticate,BlogController.deleteAllBlogs)
+router.delete("/deleteBlogs",middilewares.authenticate,BlogController.deleteAllBlogs)
 
 
 //login 
 router.post("/login",authorController.login)
  
-
-
+  
+router.all("/*",function(req,res){
+    res.status(404).send({status:false,msg:"make sure your endpont is correct"})
+})
  
 
 module.exports=router  

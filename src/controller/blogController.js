@@ -14,6 +14,7 @@ let createNewBlog = async function (req, res) {
         if (!title || !body || !tags || !category || !subcategory)
             return res.status(400).send("All fields are required.")
 
+      if (isPublished!="true"|| isPublished!="false") return res.status(400).send("true false are required.")
 
         if (!ObjectId.isValid(authorId))
             return res.status(400).send({ status: false, msg: "auhtorId is invalid." })
@@ -50,9 +51,17 @@ const getAllBlogs = async function (req, res) {
 //GET ALL BLOG BY QUERY PARAMS {authorId,category,tags,subcategory}=req.query
 const getTBlogs = async function (req, res) {
     try {
-         req.query.isDeleted=false
+         req.query=data
 
-        let findBlogs = await BlogModel.find(req.query).populate('authorId')
+let  {autherId,tags,subcategory,category}=data
+var filter={isPublished:true,isDeleted:false}
+   
+if(autherId!=null) {filter.autherId=autherId}
+if(tags=!null) {filter.tags={$in:[tags]}}
+if(subcategory!=null){filter.subcategory={$in:[subcategory]}}
+if(category!=null){filter.category=category}
+
+        let findBlogs = await BlogModel.find(filter).populate('authorId')
         res.send({ msg: findBlogs })
     } catch (error) {
         res.status(500).send({ status: false, msg: error.message })
@@ -126,12 +135,13 @@ const deleteBlog = async function (req, res) {
 let deleteAllBlogs = async function (req, res) {
     try {
         let data = req.query
+        data.authorId=req.decodeToken
         data.isDeleted=false
          
         let findBlogs = await BlogModel.find(req.query)
        if (findBlogs.length==0) return res.status(404).send({ status: false, msg: " " })
 
-        let deleteBlogs = await BlogModel.updateMany(data,{ isDeleted: true, deletedAt: new Date() })
+        let deleteBlogs = await BlogModel.updateMany(data,{ isDeleted: false, deletedAt: new Date() })
         return res.status(200).send({ status: true, deleteBlogs, msg: "blogs deleted successfully." })
     } catch (error) {
         return res.status(500).send({ msg: error.message })

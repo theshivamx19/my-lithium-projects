@@ -9,14 +9,28 @@ const authorData = async function (req, res) {
 
    try {
 
-      let { email, fname, lname, title, password } = req.body
+let data = req.body
+
+      let { email, fname, lname, title, password } = data
   
-    let createdAuther = await authorModel.create({ email, fname, lname, title, password })
+if(data.length>5){return res.status(400).send({msg:"lenth can not exide by 5"})}
 
-      return res.status(201).send({ data: createdAuther })
+let firstName=/^[a-zA-Z]+$/.test(fname)
+let lastName=/^[a-zA-Z]+$/.test(lname)
 
-   }
+if(firstName==false|| lastName==false) {return res.status(400).send({msg:"do do not enter special carrector"})}
 
+if(data.title!="Mr" ||data.title!="Miss"||data.title!="Mrs") {return res.status(400).send({msg: "title can not be onther than this"})}
+
+
+if(fname.trim().length==0||lname.trim().length==0) return res.send({msg:"fullName or lastName is not present"})
+
+ let createdAuther = await authorModel.create({ email, fname, lname, title, password })
+
+return res.status(201).send({ data: createdAuther })
+
+   
+  }
 
    // for server error   
    catch (error) {
@@ -25,7 +39,7 @@ const authorData = async function (req, res) {
 
    }
 
-}
+} 
 
 
 
