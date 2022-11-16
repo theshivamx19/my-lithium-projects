@@ -1,7 +1,6 @@
 const AuthorModel = require('../models/authorModel')
 const BlogModel = require('../models/blogModel')
-const ObjectId = require('mongoose').Types.ObjectId
- 
+ const ObjectId = require('mongoose').Types.ObjectId
 
 // CREATING NEW BLOGS
 let createNewBlog = async function (req, res) {
@@ -67,7 +66,7 @@ let updateBlog = async function (req, res) {
             const blogId = req.params.blogId;
             let data = req.body;
 
-        if (!mongoose.isValidObjectId(blogId)) {
+        if (!ObjectId.isValid(blogId)) {
               return res.status(400).send({ status: false, msg: 'Invalid Object Id' })
             }
        
@@ -99,7 +98,7 @@ const deleteBlog = async function (req, res) {
     try {
 
         const blogId = req.params.blogId
-        if (!mongoose.isValidObjectId(blogId)) {
+        if (!ObjectId.isValid(blogId)) {
             return res.status(400).send({ status: false, msg: 'Invalid Object Id' })
         }
 

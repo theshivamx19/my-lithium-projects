@@ -20,10 +20,12 @@ let authenticate=async function(req,res,next){
 
 }
 
- 
+ const Authorisation= async function(req,res,next){
+
+     
+
+if ( req.decodeToken==req.params.blogId ) next()
 
 
-
-
-
-module.exports.authenticate=authenticate
+ }
+module.exports.authenticate={authenticate,Authorisation}

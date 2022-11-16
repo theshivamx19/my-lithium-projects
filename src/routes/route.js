@@ -28,7 +28,7 @@ const middilewares = require('../middlewares/auth')
 router.delete("/blogs/:blogId",middilewares.authenticate,BlogController.deleteBlog)
 
 // DELETING BOLOG BY  QUERY PARAMS AND BY QWERY PARAMS WE HAVE TO DELETE BLOGS
-router.delete("/deleteBlogs",middilewares.authenticate,BlogController.deleteAllBlogs)
+router.delete("/deleteBlogs/",middilewares.authenticate,BlogController.deleteAllBlogs)
 
 
 //login 
