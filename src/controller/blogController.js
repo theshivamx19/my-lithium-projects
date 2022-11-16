@@ -1,7 +1,7 @@
 const AuthorModel = require('../models/authorModel')
 const BlogModel = require('../models/blogModel')
 const ObjectId = require('mongoose').Types.ObjectId
-
+ 
 
 // CREATING NEW BLOGS
 let createNewBlog = async function (req, res) {
@@ -36,7 +36,7 @@ let createNewBlog = async function (req, res) {
 const getAllBlogs = async function (req, res) {
     try {
         const blogs = await BlogModel.find({ isDeleted: false, isPublished: true })
-        if (!blogs) {
+        if (!blogs.length==0) {
             return res.status(404).send({ status: false, msg: 'No data exists' })
         }
         return res.status(200).send({ status: true, data: blogs })
@@ -51,7 +51,8 @@ const getAllBlogs = async function (req, res) {
 //GET ALL BLOG BY QUERY PARAMS {authorId,category,tags,subcategory}=req.query
 const getTBlogs = async function (req, res) {
     try {
-        // let { authorId, category, tags, subcategory } = req.query
+         req.query.isDeleted=false
+
         let findBlogs = await BlogModel.find(req.query).populate('authorId')
         res.send({ msg: findBlogs })
     } catch (error) {
@@ -139,44 +140,7 @@ let deleteAllBlogs = async function (req, res) {
     }
 }
 
-
-// WRITE AND WORKING CODE==>
-
-// const updateAllBlogs = async function (req, res) {
-
-//     const { title, body, tags, subCategory } = req.body
-//     const blogId = req.params.blogId
-
-//     if (!mongoose.isValidObjectId(blogId)) {
-//         return res.status(400).send({ status: false, msg: 'Invalid Object Id' })
-//     }
-//     const findBlog1 = await BlogModel.findById(blogId)
-//     if (!findBlog1) { return res.status(404).send({ status: true, msg: "" }) }
-
-
-
-//     const findBlog = await BlogModel.findById(blogId1)
-//     const tagsData = findBlog.tags
-//     const subcategryData = findBlog.subCategory
-//     tagsData.push(tags)
-//     subcategryData.push(subCategory)
-
-//     const blogData = await blogModel.findByIdAndUpdate(blogId, {
-//         $set: {
-//             title: title,
-//             body: body,
-//             tags: tagsData,
-//             isPublished: true,
-//             publishedAt: new Date(),
-//             subCategory: subcategryData
-
-//         }
-//     }, { new: true })
-//     return res.status(200).send({ msg: blogData })
-
-// }
-
-
+ 
 
 
 //1
@@ -197,8 +161,9 @@ module.exports.deleteAllBlogs = deleteAllBlogs
 //6
 module.exports.deleteBlog = deleteBlog
 
-
-// module.exports.updateAllBlogs = updateAllBlogs
+ 
+ 
+ 
 
 
 

@@ -1,3 +1,5 @@
+const jwt = require("jsonwebtoken");
+
 const authorModel = require("../models/authorModel")
 
 
@@ -25,4 +27,36 @@ const authorData = async function (req, res) {
 
 }
 
-module.exports.authorData = authorData
+
+
+//WE ARE GET LOGINED OF USER AND CREATING JWT TOKEN
+const login =  async function (req, res) {
+   let userName = req.body.email;
+   let password = req.body.password;
+ 
+   if (!userName || !password) {
+     return res.send({
+       status: false,
+       msg: "username or the password is not present",
+     });
+   }
+
+   let user = await authorModel.findOne({ email: userName, password: password });
+   if (!user)
+     return res.send({
+       status: false,
+       msg: "username or the password is not corerct",
+     });
+
+     let token = jwt.sign(
+       {
+         authorId: user._id,
+        },
+       "Blog project"
+     );
+      
+     res.status(200).send({ status: true, data: token });
+   };
+
+  
+module.exports ={ authorData,login}
