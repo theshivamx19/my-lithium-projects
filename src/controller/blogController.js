@@ -53,8 +53,8 @@ const getTBlogs = async function (req, res) {
     try {
          req.query=data
 
-let  {autherId,tags,subcategory,category}=data
-var filter={isPublished:true,isDeleted:false}
+const data = {autherId,tags,subcategory,category}
+const filter={isPublished:true,isDeleted:false}
    
 if(autherId!=null) {filter.autherId=autherId}
 if(tags=!null) {filter.tags={$in:[tags]}}
