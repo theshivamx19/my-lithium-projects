@@ -31,7 +31,7 @@ let createNewBlog = async function (req, res) {
 }
 
 
- //GET ALL BLOG BY { isDeleted: false, isPublished: true }
+ 
 const getAllBlogs = async function (req, res) {
     try {
         
@@ -48,7 +48,7 @@ const getAllBlogs = async function (req, res) {
 }
 
 
-//GET ALL BLOG BY QUERY PARAMS {authorId,category,tags,subcategory}=req.query
+ 
 const getBlogs = async function (req, res) {
     try {
         let data = req.query
@@ -67,7 +67,7 @@ const getBlogs = async function (req, res) {
 }
 
 
-// UPDATING BLOG BY TAGS  CATEGORY SUB-COTEGORY ETC 
+ 
 let updateBlog = async function (req, res) {
     try {
             const blogId = req.params.blogId;
@@ -100,7 +100,7 @@ let updateBlog = async function (req, res) {
 
 
 
-// DELETING BOLOG BY PATH PARAMS
+ 
 const deleteBlog = async function (req, res) {
     try {
 
@@ -128,8 +128,7 @@ const deleteBlog = async function (req, res) {
 }
 
 
-
-// DELETING BOLOG BY  QUERY PARAMS AND BY QWERY PARAMS WE HAVE TO DELETE BLOGS
+ 
 let deleteAllBlogs = async function (req, res) {
     try {
 
@@ -154,22 +153,12 @@ let deleteAllBlogs = async function (req, res) {
  
 
 
-//1
+
 module.exports.createNewBlog = createNewBlog
-
-//2
 module.exports.getAllBlogs = getAllBlogs
-
-//3
 module.exports.getBlogs = getBlogs
-
-//4
 module.exports.updateBlog = updateBlog
-
-//5
 module.exports.deleteAllBlogs = deleteAllBlogs
-
-//6
 module.exports.deleteBlog = deleteBlog
 
  
