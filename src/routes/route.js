@@ -9,30 +9,21 @@ const BlogController=require("../controller/blogController")
 const middilewares = require('../middlewares/auth')
 
 
-// CREATING AUTHER
+ //public APIs
  router.post("/authors",authorController.authorData)
+ router.post("/login",authorController.login)
 
-// CREATING NEW BLOGS 
- router.post("/blogs",middilewares.authenticate,BlogController.createNewBlog)
-
-//GET ALL BLOG BY { isDeleted: false, isPublished: true }
- router.get("/getAllBlogs",middilewares.authenticate,BlogController.getAllBlogs)
-
-//GET ALL BLOG BY QUERY PARAMS {authorId,category,tags,subcategory}=req.query
- router.get("/getBlogs",middilewares.authenticate,BlogController.getTBlogs)
-
-// UPDATING BLOG BY TAGS  CATEGORY SUB-COTEGORY ETC 
- router.put("/updateBlogs/blogs/:blogId",middilewares.authenticate,middilewares.Authorisation,BlogController.updateBlog)
-
-// DELETING BOLOG BY PATH PARAMS
+//protected APIs
+router.post("/blogs",middilewares.authenticate,BlogController.createNewBlog)
+router.get("/blogs",middilewares.authenticate,BlogController.getAllBlogs)
+router.get("/getBlogs",middilewares.authenticate,BlogController.getBlogs)
+router.put("/blogs/:blogId",middilewares.authenticate,middilewares.Authorisation,BlogController.updateBlog)
 router.delete("/blogs/:blogId",middilewares.authenticate,middilewares.Authorisation,BlogController.deleteBlog)
-
-// DELETING BOLOG BY  QUERY PARAMS AND BY QWERY PARAMS WE HAVE TO DELETE BLOGS
 router.delete("/deleteBlogs",middilewares.authenticate,BlogController.deleteAllBlogs)
 
 
-//login 
-router.post("/login",authorController.login)
+ 
+ 
  
   
 router.all("/*",function(req,res){

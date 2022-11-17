@@ -1,6 +1,6 @@
 const AuthorModel = require('../models/authorModel')
 const BlogModel = require('../models/blogModel')
- const ObjectId = require('mongoose').Types.ObjectId
+ const {isValidObjectId} = require('mongoose')
 
 // CREATING NEW BLOGS
 let createNewBlog = async function (req, res) {
@@ -14,9 +14,8 @@ let createNewBlog = async function (req, res) {
         if (!title || !body || !tags || !category || !subcategory)
             return res.status(400).send("All fields are required.")
 
-      if (isPublished!="true"|| isPublished!="false") return res.status(400).send("true false are required.")
-
-        if (!ObjectId.isValid(authorId))
+      
+        if (!isValidObjectId(authorId))
             return res.status(400).send({ status: false, msg: "auhtorId is invalid." })
 
         let findAuthor = await AuthorModel.findById(authorId)
@@ -35,8 +34,9 @@ let createNewBlog = async function (req, res) {
  //GET ALL BLOG BY { isDeleted: false, isPublished: true }
 const getAllBlogs = async function (req, res) {
     try {
+        
         const blogs = await BlogModel.find({ isDeleted: false, isPublished: true })
-        if (!blogs.length==0) {
+        if (blogs.length==0) {
             return res.status(404).send({ status: false, msg: 'No data exists' })
         }
         return res.status(200).send({ status: true, data: blogs })
@@ -49,22 +49,20 @@ const getAllBlogs = async function (req, res) {
 
 
 //GET ALL BLOG BY QUERY PARAMS {authorId,category,tags,subcategory}=req.query
-const getTBlogs = async function (req, res) {
+const getBlogs = async function (req, res) {
     try {
-         req.query=data
-
-const data = {autherId,tags,subcategory,category}
-const filter={isPublished:true,isDeleted:false}
-   
-if(autherId!=null) {filter.autherId=autherId}
-if(tags=!null) {filter.tags={$in:[tags]}}
-if(subcategory!=null){filter.subcategory={$in:[subcategory]}}
-if(category!=null){filter.category=category}
-
-        let findBlogs = await BlogModel.find(filter).populate('authorId')
-        res.send({ msg: findBlogs })
-    } catch (error) {
-        res.status(500).send({ status: false, msg: error.message })
+        let data = req.query
+        data.isDeleted = false
+        data.isPublished = true
+                          
+        const blog = await BlogModel.find(data)
+        if(blog.length==0){
+            return res.status(404).send({status : false, msg : 'Blog does not exists'})
+        }
+        return res.status(200).send({status : true, data : blog})
+    }
+    catch(err){
+        return res.status(500).send({status : false, error : err.message})
     }
 }
 
@@ -75,7 +73,7 @@ let updateBlog = async function (req, res) {
             const blogId = req.params.blogId;
             let data = req.body;
 
-        if (!ObjectId.isValid(blogId)) {
+        if (!isValidObjectId(blogId)) {
               return res.status(400).send({ status: false, msg: 'Invalid Object Id' })
             }
        
@@ -107,7 +105,7 @@ const deleteBlog = async function (req, res) {
     try {
 
         const blogId = req.params.blogId
-        if (!ObjectId.isValid(blogId)) {
+        if (!isValidObjectId(blogId)) {
             return res.status(400).send({ status: false, msg: 'Invalid Object Id' })
         }
 
@@ -117,7 +115,7 @@ const deleteBlog = async function (req, res) {
 
           await BlogModel.findByIdAndUpdate(blogId, {
             $set: {
-                isDeleted: false,
+                isDeleted: true,
                 deletedAt: new Date()
             }
         }, { new: true })
@@ -134,14 +132,18 @@ const deleteBlog = async function (req, res) {
 // DELETING BOLOG BY  QUERY PARAMS AND BY QWERY PARAMS WE HAVE TO DELETE BLOGS
 let deleteAllBlogs = async function (req, res) {
     try {
+
         let data = req.query
         data.authorId=req.decodeToken
         data.isDeleted=false
-         
-        let findBlogs = await BlogModel.find(req.query)
+    
+      let findBlogs = await BlogModel.find(data)
+        
        if (findBlogs.length==0) return res.status(404).send({ status: false, msg: " " })
+ 
 
-        let deleteBlogs = await BlogModel.updateMany(data,{ isDeleted: false, deletedAt: new Date() })
+        let deleteBlogs = await BlogModel.updateMany(data,{ isDeleted : true, deletedAt: new Date() })
+
         return res.status(200).send({ status: true, deleteBlogs, msg: "blogs deleted successfully." })
     } catch (error) {
         return res.status(500).send({ msg: error.message })
@@ -159,7 +161,7 @@ module.exports.createNewBlog = createNewBlog
 module.exports.getAllBlogs = getAllBlogs
 
 //3
-module.exports.getTBlogs = getTBlogs
+module.exports.getBlogs = getBlogs
 
 //4
 module.exports.updateBlog = updateBlog

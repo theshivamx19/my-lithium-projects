@@ -1,59 +1,56 @@
 const jwt = require("jsonwebtoken");
-
 const authorModel = require("../models/authorModel")
 
 
 
-// CREATING AUTHER
+const nameReg = /^[a-zA-Z]+$/
+
+
 const authorData = async function (req, res) {
-
   try {
-
     const data = req.body;
-
     if (Object.keys(data).length == 0) {
-      return res
-        .status(400)
-        .send({ status: false, message: "All Field are Mandatory" });
+      return res.status(400).send({ status: false, message: "All Field are Mandatory" });
     }
-
-    if (data.length > 5) { return res.status(400).send({ msg: "lenth can not exide by 5" }) }
-
-
     const { email, fname, lname, title, password } = data
+    if (!fname) {
+      return res.status(400).send({ status: false, msg: "First name must be present" })
+    }
+    if (!lname) {
+      return res.status(400).send({ status: false, msg: "Last name must be present" })
+    }
+    if (!email) {
+      return res.status(400).send({ status: false, msg: "Email must be present" })
+    }
+    if (!title) {
+      return res.status(400).send({ status: false, msg: "Title is mandatory" })
+    }
+    if (!password) {
+      return res.status(400).send({ status: false, msg: "Password must be there" })
+    }
+    const firstName = nameReg.test(fname)
+    const lastName = nameReg.test(lname)
 
-    if (fname.trim().length == 0 || lname.trim().length == 0) return res.send({ msg: "fullName or lastName is not present" })
-
-    const firstName = /^[a-zA-Z]+$/.test(fname)
-    const lastName = /^[a-zA-Z]+$/.test(lname)
-
-    if (firstName == false || lastName == false) { return res.status(400).send({ msg: "do do not enter special carrector" }) }
-
-    if (data.title != "Mr" || data.title != "Miss" || data.title != "Mrs") { return res.status(400).send({ msg: "title can not be onther than this" }) }
+    if (firstName == false || lastName == false) {
+      return res.status(400).send({ msg: "Special characters are not allowed in firstName and lastName" })
+    }
+    if (title != "Mr" && title != "Miss" && title != "Mrs") {
+      return res.status(400).send({ msg: "title can not be onther than this" })
+    }
 
     const isEmailAlreadyUsed = await authorModel.findOne({ email });
     if (isEmailAlreadyUsed) {
-      return res
-        .status(400)
-        .send({ status: false, msg: "Oooh...this Email already Registered. Please try Login..." });
+      return res.status(400).send({ status: false, msg: "Oooh...this Email already Registered. Please try again..." });
     }
-
-
+    
     const createdAuther = await authorModel.create(data)
-
-    return res.status(201).send({msg: "Author Created successfully....", data: createdAuther })
-
+    return res.status(201).send({ status : true, msg: "Author Created successfully....", data: createdAuther })
   }
-
-  // for server error   
   catch (error) {
-
     return res.status(500).send({ msg: error.message })
 
   }
-
 }
-
 
 
 //WE ARE GET LOGINED OF USER AND CREATING JWT TOKEN
@@ -70,7 +67,7 @@ const login = async function (req, res) {
 
   let user = await authorModel.findOne({ email: userName, password: password });
   if (!user)
-    return res.send({
+    return res.status(400).send({
       status: false,
       msg: "username or the password is not corerct",
     });
@@ -84,6 +81,7 @@ const login = async function (req, res) {
 
   res.status(200).send({ status: true, data: token });
 };
+
 
 
 module.exports = { authorData, login }
