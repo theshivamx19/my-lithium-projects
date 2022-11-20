@@ -37,8 +37,10 @@ try{const blogId = req.params.blogId;
    if (!blog) return res.status(400).send({ status: false, msg: "Blog does not exist." })
 
 
-  if(blog.authorId!=req.decodeToken) return res.status(403).send({ status: false, msg: "Oooh you are not authorised." })
-  
+   if(blog.authorId!=req.decodeToken) return res.status(403).send({ status: false, msg: "Oooh you are not authorised." })
+
+   if(blog.isDeleted) return res.status(400).send({ status: false, msg: "Oooh BLOG ALREDY DELETED so, you can not UPDATE it." })
+                  
    next()
 }catch(error){
   return res.status(500).send({status:false,msg:error.message})

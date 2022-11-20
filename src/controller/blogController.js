@@ -6,7 +6,7 @@ const BlogModel = require('../models/blogModel')
 let createNewBlog = async function (req, res) {
     try {
         let data = req.body
-        let { title, body, authorId, tags, category, subcategory, isPublished } = data
+        let { title, body, authorId, tags, category, subcategory} = data
 
         if (Object.keys(data).length == 0)
             return res.status(400).send({ status: false, msg: "Data is required to create a blog." })
@@ -51,6 +51,10 @@ const getAllBlogs = async function (req, res) {
  
 const getBlogs = async function (req, res) {
     try {
+
+const w= Object.keys(req.query)
+if(!["tags","category",'subCategory',"title","body"].includes(...w)) return res.status(400).send({msg:"query should tags category subCategory title body only"})
+
         let data = req.query
         data.isDeleted = false
         data.isPublished = true
@@ -81,14 +85,17 @@ let updateBlog = async function (req, res) {
         let blog = await BlogModel.findById(blogId)
         if (!blog) return res.status(404).send({ status: false, msg: "Blog does not exist." })
 
+         
+        
+
         let updatedBlogs = await BlogModel.findOneAndUpdate({ _id: blogId },
             {
                 title: data.title,
                 body: data.body,
                 category: data.category,
-                isPublished: true,
+                isPublished:data.isPublished,
                 publishedAt: new Date(),
-                $push: { tags: data.tags, subcategory: data.subcategory }
+                $push: { tags: data.tags, subCategory: data.subCategory }
             },
             { new: true })
 
@@ -116,7 +123,8 @@ const deleteBlog = async function (req, res) {
           await BlogModel.findByIdAndUpdate(blogId, {
             $set: {
                 isDeleted: true,
-                deletedAt: new Date()
+                deletedAt: new Date(),
+                isPublished:false
             }
         }, { new: true })
         return res.status(200).send({ msg:" " })
@@ -132,17 +140,22 @@ const deleteBlog = async function (req, res) {
 let deleteAllBlogs = async function (req, res) {
     try {
 
+const w= Object.keys(req.query)
+
+if(!["tags","category",'subCategory',"title","body","authorId"].includes(...w)) return res.status(400).send({msg:"query should tags category subCategory title body only"})
+   
+
         let data = req.query
         data.authorId=req.decodeToken
-        data.isDeleted=false
+        // data.isDeleted=false
     
       let findBlogs = await BlogModel.find(data)
-        
-       if (findBlogs.length==0) return res.status(404).send({ status: false, msg: " " })
+      if (findBlogs.length==0) return res.status(404).send({ status: false, msg: "data is not present in db according to your qwery." })
+      
+      let dataa= findBlogs.filter(a=>a.isDeleted==false)
+      if(dataa.length==0) return res.status(400).send({msg:"already blogs has been deleted"})
  
-
-        let deleteBlogs = await BlogModel.updateMany(data,{ isDeleted : true, deletedAt: new Date() })
-
+        let deleteBlogs = await BlogModel.updateMany(data,{ isDeleted : true,isPublished:false, deletedAt: new Date() })
         return res.status(200).send({ status: true, deleteBlogs, msg: "blogs deleted successfully." })
     } catch (error) {
         return res.status(500).send({ msg: error.message })

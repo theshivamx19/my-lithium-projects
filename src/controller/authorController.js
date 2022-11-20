@@ -40,7 +40,7 @@ const authorData = async function (req, res) {
 
     const isEmailAlreadyUsed = await authorModel.findOne({ email });
     if (isEmailAlreadyUsed) {
-      return res.status(400).send({ status: false, msg: "Oooh...this Email already Registered. Please try again..." });
+      return res.status(400).send({ status: false, msg: "Oooh...this Email already Registered. Please try login..." });
     }
     
     const createdAuther = await authorModel.create(data)
