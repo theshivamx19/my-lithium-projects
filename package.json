@@ -1,0 +1,22 @@
+{
+  "name": "project-internshipgroup43",
+  "version": "1.0.0",
+  "description": "Open to Intern Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theshivamx19/project-internshipGroup43.git"
+  },
+  "author": "Shivam Maurya, Sweta Zalavadiya, Sanket Kumar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/theshivamx19/project-internshipGroup43/issues"
+  },
+  "homepage": "https://github.com/theshivamx19/project-internshipGroup43#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
