@@ -7,7 +7,7 @@ const app = express()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended : true}))
 
-mongoose.connect("mongodb+srv://sweta1234:sweta5678@sweta2.rwx6dlh.mongodb.net/test",{
+mongoose.connect("mongodb+srv://sweta1234:sweta5678@sweta2.rwx6dlh.mongodb.net/group43Database",{
    useNewUrlParser :true
 })
 .then(()=>console.log("mongoDb is connected with project 2"))
