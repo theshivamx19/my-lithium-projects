@@ -6,7 +6,7 @@ const UserModel = require("../models/usermodel")
 const ISBNRegex = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/  
                 //this regex is used for both 10 & 13 number digit and also including hyphen(-) 
 
-const reviewsRegex = /^\d{10}$/
+// const reviewsRegex = /^\d{10}$/
 let releasedAtRegex = /^\d{4}-\d{2}-\d{2}$/
 
 
@@ -14,7 +14,7 @@ exports.createBook = async (req, res) => {
 
     try {
         let data = req.body
-        let {title, excerpt, ISBN, category ,subcategory, reviews, userId ,releasedAt} = data
+        let {title, excerpt, ISBN, category ,subcategory, userId ,releasedAt} = data
         if(Object.keys(data).length === 0){
             return res.status(400).send({status : false, msg : "body can not be empty"})
         }
