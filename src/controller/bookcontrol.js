@@ -32,6 +32,21 @@ exports.filterBookByQuery = async (req, res) => {
     try {
         let filterBy = req.query
 
+        if (filterBy) {
+
+            let queryArr = Object.keys(filterBy)
+    
+            if (queryArr.length > 3) return res.status(400).send({ status: false, message: "Invalid query detected !" })
+
+            for (let i = 0; i < queryArr.length; i++) {
+
+                if (!['userId', 'category', 'subcategory'].includes(queryArr[i])) {
+                    return res.status(400).send({ status: false, message: "Invalid query detected !" })
+                }
+                break
+            }
+        }
+
         let filteredBook = await BookModel.find({ isDeleted: false, ...filterBy }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 })
 
         if (Object.keys(filteredBook).length == 0) {
