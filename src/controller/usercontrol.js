@@ -73,7 +73,7 @@ exports.userLogin = async (req, res) => {
 
         res.setHeader("x-api-key", token)
 
-        res.status(200).send({ status: true, token: token, ExpiresIn: "Next 24 hours", IssuedAt: date })
+        res.status(200).send({ status: true, token: token, ExpiresIn: "Token valid for 24 hours from time of creation", IssuedAt: date })
     }
     catch (error) {
         res.status(500).send({ status: false, message: error.message })
