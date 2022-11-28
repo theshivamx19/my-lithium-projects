@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx nodemon src/index.js"
   },
-  "author": "",
+  "author": "Vikas Gautam, Harsh Yadav, Shivam Maurya, Tathagata Mishra",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
