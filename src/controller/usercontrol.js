@@ -9,8 +9,21 @@ let nameValid = /^[a-zA-Z\ ]{2,15}$/
 exports.createUser = async (req, res) => {
     try {
         let data = req.body
-
         let { title, name, phone, email, password } = data
+
+        if (data) {
+            let arr = Object.keys(data)
+
+            if (arr.length > 6) return res.status(400).send({ status: false, message: "Key names must be within these: ('title', 'name', 'phone', 'email', 'password', 'address')" })
+
+            for (let i = 0; i < arr.length; i++) {
+
+                if (!['title', 'name', 'phone', 'email', 'password', 'address'].includes(arr[i]))
+
+                    return res.status(400).send({ status: false, message: "Key names must be within these: ('title', 'name', 'phone', 'email', 'password', 'address')" })
+            }
+        }
+
 
         if (!title) { return res.status(400).send({ status: false, message: "Title is mandatory" }) }
         if (!["Mr", "Mrs", "Miss"].includes(title)) { return res.status(400).send({ status: false, message: "Please provide a valid title - Mr , Mrs , Miss" }) }
@@ -29,7 +42,7 @@ exports.createUser = async (req, res) => {
         if (!email) { return res.status(400).send({ status: false, message: "Email is mandatory" }) }
         if (!email.match(emailValid)) { return res.status(400).send({ status: false, message: "Please provide a valid email" }) }
 
-        req.body.email = email.toLowerCase()
+        data.email = email.toLowerCase()
 
         let uniqueEmail = await UserModel.findOne({ email })
         if (uniqueEmail) { return res.status(400).send({ status: false, message: "Please provide a unique email" }) }
@@ -46,72 +59,52 @@ exports.createUser = async (req, res) => {
     }
 }
 
-const userLogin = async function (req, res) {
+exports.userLogin = async (req, res) => {
     try {
-        const userId = req.body.email
-        const password = req.body.password
-        if (!userId) {
-            return res.status(400).send({ status: false, msg: 'UserId is required' })
+        const {emailId, password} = req.body
+
+        if (req.body) {
+            let arr = Object.keys(req.body)
+
+            if (arr.length > 2) return res.status(400).send({ status: false, message: "Key names must be within these: ('email', 'password')" })
+
+            for (let i = 0; i < arr.length; i++) {
+
+                if (!['email', 'password'].includes(arr[i]))
+
+                    return res.status(400).send({ status: false, message: "Key names must be within these: ('email', 'password')" })
+            }
+        }
+
+
+        if (!emailId) {
+            return res.status(400).send({ status: false, message: 'emailId is required' })
         }
         if (!password) {
-            return res.status(400).send({ status: false, msg: 'Password is required' })
+            return res.status(400).send({ status: false, message: 'Password is required' })
         }
-        if(!emailValid.test(userId)){
-            return res.status(400).send({status : false, msg : 'Enter valid userId'})
+        if (!emailValid.test(emailId)) {
+            return res.status(400).send({ status: false, message: 'Enter valid emailId' })
         }
-        const checkUser = await userModel.findOne({ email: userId, password: password })
+
+        const checkUser = await UserModel.findOne({ email: emailId, password: password })
         if (!checkUser) {
-            return res.status(400).send({ status: false, msg: 'UserId or password is incorrect' })
+            return res.status(401).send({ status: false, message: 'emailId or password is incorrect' })
         }
+
         const token = jwt.sign(
             {
-                userId: checkUser._id.toString(),
+                emailId: checkUser._id.toString(),
                 batch: "Lithium",
                 iat: new Date()
             },
-            'mySecretKey', { expiresIn: '1h' })
+            "SecretKey", { expiresIn: '1h' })
+
         res.setHeader('x-api-key', token)
-        return res.status(200).send({ status: true, data: token })
+
+        return res.status(200).send({ status: true, data: { token: token, ExpiresIn: "Token is valid for 1 hour from time of creation", IssuedAt: new Date() } })
     }
     catch (err) {
         return res.status(500).send({ status: false, error: err.message })
     }
 }
-
-module.exports.userLogin = userLogin
-
-
-
-// exports.userLogin = async (req, res) => {
-//     try {
-//         let userId = req.body.email
-//         let pwd = req.body.password
-
-//         let user = await UserModel.findOne({ email: mailId, password: pwd })
-
-//         if (!user)
-//             return res.status(401).send({ status: false, warning: "Wrong email-id or password !" })
-
-//         let token = jwt.sign(
-//             {
-//                 userId: user._id,
-//                 email: mailId,
-//                 password: pwd
-//             },
-//             "fake password",
-//             {
-//                 expiresIn: '24h'
-//             }
-//         )
-
-//         let date = new Date();
-//         // let iat = `Token Generated at:- ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-
-//         res.setHeader("x-api-key", token)
-
-//         res.status(200).send({ status: true, token: token, ExpiresIn: "Token valid for 24 hours from time of creation", IssuedAt: date })
-//     }
-//     catch (error) {
-//         res.status(500).send({ status: false, message: error.message })
-//     }
-// }

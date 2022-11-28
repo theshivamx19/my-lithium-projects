@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const BookModel = require('../models/bookmodel')
+const BookModel = require("../models/bookmodel")
 const UserModel = require("../models/usermodel")
 
 
@@ -14,10 +14,21 @@ exports.createBook = async (req, res) => {
     try {
         let data = req.body
         let { title, excerpt, ISBN, category, subcategory, userId, releasedAt } = data
-        
-        if (Object.keys(data).length === 0) {
-            return res.status(400).send({ status: false, message: "Body can not be empty" })
+
+        if (data) {
+            let arr = Object.keys(data)
+
+            if (arr.length > 7) return res.status(400).send({ status: false, message: "Key names must be within these: ('title', 'excerpt', 'ISBN', 'category', 'subcategory', 'userId', 'releasedAt')" })
+
+            for (let i = 0; i < arr.length; i++) {
+
+                if (!['title', 'excerpt', 'ISBN', 'category', 'subcategory', 'userId', 'releasedAt'].includes(arr[i]))
+
+                    return res.status(400).send({ status: false, message: "Key names must be within these: ('title', 'excerpt', 'ISBN', 'category', 'subcategory', 'userId', 'releasedAt')" })
+            }
         }
+        
+
         if (!title || title == "") {
             return res.status(400).send({ status: false, message: "Please enter title" })
         }
@@ -68,16 +79,15 @@ exports.filterBookByQuery = async (req, res) => {
         let filterBy = req.query
 
         if (filterBy) {
-
             let queryArr = Object.keys(filterBy)
 
-            if (queryArr.length > 3) return res.status(400).send({ status: false, message: "Invalid query detected !" })
+            if (queryArr.length > 3) return res.status(400).send({ status: false, message: "Queries must be within these: ('userId', 'category', 'subcategory')" })
 
             for (let i = 0; i < queryArr.length; i++) {
 
                 if (!['userId', 'category', 'subcategory'].includes(queryArr[i])) {
                     
-                    return res.status(400).send({ status: false, message: "Invalid query detected !" })
+                    return res.status(400).send({ status: false, message: "Queries must be within these: ('userId', 'category', 'subcategory')" })
                 }
             }
         }
