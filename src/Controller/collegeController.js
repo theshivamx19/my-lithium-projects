@@ -9,8 +9,8 @@ const createCollege = async function (req, res) {
         if (!name) return res.status(400).send({ status: false, message: "Name required" })
         if (!fullName) return res.status(400).send({ status: false, message: "FullName required" })
         if (!logoLink) return res.status(400).send({ status: false, message: "LogoLink required" })
-        if (!vfy.Name(data.Name)) return res.status(400).send({ status: false, message: "Invalid Name" })
-        if (!vfy.fullName(data.fullName)) return res.status(400).send({ status: false, message: "Invalid fullName" })
+        if (!vfy.Name(name)) return res.status(400).send({ status: false, message: "Invalid Name" })
+        if (!vfy.fullName(fullName)) return res.status(400).send({ status: false, message: "Invalid fullName" })
         if (!vfy.logoLink(data.logoLink)) return res.status(400).send({ status: false, message: "Invalid logoLink" })
         let checkDuplicate = await collegeModel.findOne({ name: data.name })
         if (checkDuplicate) return res.status(400).send({ status: false, message: "College name already exist. Please provide another College Name." })
@@ -22,6 +22,7 @@ const createCollege = async function (req, res) {
 }
 const getDetails = async function (req, res) {
     try {
+        res.setHeader('Access-Control-Allow-Origin', '*')
         const collegeName = req.query.collegeName
         if (vfy.checkObjKeys(req.query)) {
             return res.status(400).send({ status: false, message: 'Data is required to filter' })

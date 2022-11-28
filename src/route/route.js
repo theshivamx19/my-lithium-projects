@@ -3,12 +3,15 @@ const router = express.Router();
 const collegeController=require("../controller/collegeController")
 const internController=require("../controller/internController")
 
-router.get('/test', function (req, res){
-    console.log("hi I'm sweta")
-    res.status(201).send({message:"welcome"})
-})
+//--------------------------------------API's--------------------------------------------------------------------------
+
 router.post('/functionup/colleges', collegeController.createCollege ) 
 router.post('/functionup/interns', internController.createIntern) 
 router.get('/functionup/collegeDetails', collegeController.getDetails) 
+
+//----------------------------------------EndPoint Error for all API's--------------------------------------------------
+router.all("/*", function (req, res) {
+    res.status(404).send({ status: false, msg: "make sure your endpont is correct" })
+})
 
 module.exports = router;

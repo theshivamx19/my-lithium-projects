@@ -13,7 +13,9 @@ mongoose.connect("mongodb+srv://sweta1234:sweta5678@sweta2.rwx6dlh.mongodb.net/g
 .then(()=>console.log("mongoDb is connected with project 2"))
 .catch((err)=>console.log(err))
 
-app.listen(process.env.PORT || 3000,function(){
-   console.log("server is running on port"+ " "+ (process.env.PORT || 3000))
+app.listen(process.env.PORT || 3001,function(){
+   console.log("server is running on port"+ " "+ (process.env.PORT || 3001))
 })
 app.use("/",route)
+
+//express.json()
