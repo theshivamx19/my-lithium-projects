@@ -7,7 +7,7 @@ const ISBNRegex = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/
                 //this regex is used for both 10 & 13 number digit and also including hyphen(-) 
 
 // const reviewsRegex = /^\d{10}$/
-let releasedAtRegex = /^\d{4}-\d{2}-\d{2}$/
+let releasedAtRegex = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
 
 
 exports.createBook = async (req, res) => {
