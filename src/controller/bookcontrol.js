@@ -95,7 +95,7 @@ exports.filterBookByQuery = async (req, res) => {
         let filteredBook = await BookModel.find({ isDeleted: false, ...filterBy }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 })
 
         if (Object.keys(filteredBook).length == 0) {
-            return res.status(404).send({ status: false, message: "No data matched !" })
+            return res.status(404).send({ status: false, message: "No data found !" })
         }
 
         res.status(200).send({ status: true, message: 'Books list', data: filteredBook })
@@ -110,10 +110,10 @@ exports.getBookById = async (req, res) => {
     try {
         let bookId = req.params.bookId
 
-        let filteredBook = await BookModel.find({ isDeleted: false, ...filterBy }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 })
+        let filteredBook = await BookModel.findOne({ isDeleted: false, _id: bookId })
 
         if (Object.keys(filteredBook).length == 0) {
-            return res.status(404).send({ status: false, message: "No data matched !" })
+            return res.status(404).send({ status: false, message: "No data found !" })
         }
 
         res.status(200).send({ status: true, books: filteredBook })
