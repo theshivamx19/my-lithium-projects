@@ -6,7 +6,7 @@ const BookCtrl = require("../controller/bookcontrol")
 const ReviewCtrl = require("../controller/reviewcontrol")
 
 
-// router.get("/servertest", (req, res) => res.send("Server is working fine !"))
+router.get("/servertest", (req, res) => res.send("Server is working fine !"))
 
 
 router.post("/register", UserCtrl.createUser)

@@ -3,10 +3,9 @@ const BookModel = require('../models/bookmodel')
 const UserModel = require("../models/usermodel")
 
 
-const ISBNRegex = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/
 //this regex is used for both 10 & 13 number digit and also including hyphen(-) 
+let ISBNRegex = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/
 
-// const reviewsRegex = /^\d{10}$/
 let releasedAtRegex = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
 
 
@@ -15,42 +14,43 @@ exports.createBook = async (req, res) => {
     try {
         let data = req.body
         let { title, excerpt, ISBN, category, subcategory, userId, releasedAt } = data
+        
         if (Object.keys(data).length === 0) {
-            return res.status(400).send({ status: false, message: "body can not be empty" })
+            return res.status(400).send({ status: false, message: "Body can not be empty" })
         }
         if (!title || title == "") {
-            return res.status(400).send({ status: false, message: "please enter title" })
+            return res.status(400).send({ status: false, message: "Please enter title" })
         }
         if (!excerpt || excerpt == "") {
-            return res.status(400).send({ status: false, message: "please enter excerpt" })
+            return res.status(400).send({ status: false, message: "Please enter excerpt" })
         }
         if (!userId || userId == "") {
-            return res.status(400).send({ status: false, message: "please enter userId" })
+            return res.status(400).send({ status: false, message: "Please enter user id" })
         }
         if (!mongoose.isValidObjectId(userId)) {
-            return res.status(400).send({ status: false, message: "invalid userId" })
+            return res.status(400).send({ status: false, message: "Invalid user id" })
         }
         let findUserId = await UserModel.findById(userId)
         if (!findUserId) {
-            return res.status(400).send({ status: false, message: "userId can not exist" })
+            return res.status(400).send({ status: false, message: "User id do not exist" })
         }
         if (!ISBN || ISBN == "") {
-            return res.status(400).send({ status: false, message: "please enter ISBN " })
+            return res.status(400).send({ status: false, message: "Please enter ISBN" })
         }
         if (!ISBNRegex.test(ISBN)) {
             return res.status(400).send({ status: false, message: "ISBN is not valid" })
         }
         if (!category || category == "") {
-            return res.status(400).send({ status: false, message: "please enter the category" })
+            return res.status(400).send({ status: false, message: "Please enter the category of the book" })
         }
         if (!subcategory || subcategory == "") {
-            return res.status(400).send({ status: false, message: "please enter subcategory" })
+            return res.status(400).send({ status: false, message: "Please enter subcategory" })
         }
         if (!releasedAt || releasedAt == "") {
-            return res.status(400).send({ status: false, message: "please enter releasedAt date of books" })
+            return res.status(400).send({ status: false, message: "Please enter release date of the book" })
         }
         if (!releasedAtRegex.test(releasedAt)) {
-            return res.status(400).send({ status: false, message: "invalid date formate" })
+            return res.status(400).send({ status: false, message: "Invalid date formate. (YYYY-MM-DD)" })
         }
 
         let bookData = await BookModel.create(data)
@@ -76,6 +76,7 @@ exports.filterBookByQuery = async (req, res) => {
             for (let i = 0; i < queryArr.length; i++) {
 
                 if (!['userId', 'category', 'subcategory'].includes(queryArr[i])) {
+                    
                     return res.status(400).send({ status: false, message: "Invalid query detected !" })
                 }
             }
