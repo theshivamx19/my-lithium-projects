@@ -1,20 +1,41 @@
 const jwt = require('jsonwebtoken')
-const UserModel = require("../models/usermodel")
+const UserModel = require('../models/usermodel')
 
+let phoneValid = /^[6-9]\d{9}$/
+let emailValid = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/
+let namevalid = /^[a-zA-Z\ ]{2,15}$/
 
-exports.createUser = async (req, res) => {
-    try {
+    exports.createUser = async (req, res) => {
+        try {
+            let data = req.body
+            let { title, name, phone, email, password } = data
+            if (!title) { return res.status(400).send({ status: false, message: "title is mandatory" }) }
+            if (!["Mr","Mrs","Miss"].includes(title))  { return res.status(400).send({ status: false, message: "Pls provide a valid title - Mr , Mrs , Miss" }) }
+            if (!name) { return res.status(400).send({ status: false, message: "name is mandatory" }) }
+            if(!name.match(namevalid)){return res.status(400).send({status:false,message:"Pls provide a Valid name"})}
+            if (!phone) { return res.status(400).send({ status: false, message: "phone is mandatory" }) }
+            console.log(typeof name)
+            phone = String(phone)
+            phone = phone.trim()
+            if (!phone.match(phoneValid)) { return res.status(400).send({ status: false, message: "Pls provide a valid phone" }) }
+            let uniquephone = await UserModel.findOne({ phone })
+            if (uniquephone) { return res.status(400).send({ status: false, message: "Pls provide a Unique phone" }) }
+            if (!email) { return res.status(400).send({ status: false, message: "email is mandatory" }) }
+            if (!email.match(emailValid)) { return res.status(400).send({ status: false, message: "Pls provide a valid Email" }) }
+            req.body.email=email.toLowerCase()
+            let uniqueemail = await UserModel.findOne({ email })
+            if (uniqueemail) { return res.status(400).send({ status: false, message: "Pls provide a Unique email" }) }
+            if (!password) { return res.status(400).send({ status: false, message: "password is mandatory" }) }
+            if (password.length < 8 || password.length > 15) { return res.status(400).send({ status: false, message: "Pls provide password length b/w 8-15" }) }
 
-        let data = req.body
+            let userData = await UserModel.create(data)
+            return res.status(201).send({ status: true, message: 'Success', data: userData })
 
-        let userData = await UserModel.create(data)
-
-        return res.status(201).send({ status: true, message: 'Success', data: userData })
+        }
+        catch (error) {
+            res.status(500).send({ status: false, message: error.message })
+        }
     }
-    catch (error) {
-        res.status(500).send({ status: false, message: error.message })
-    }
-}
 
 exports.userLogin = async (req, res) => {
     try {
