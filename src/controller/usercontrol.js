@@ -46,36 +46,72 @@ exports.createUser = async (req, res) => {
     }
 }
 
-exports.userLogin = async (req, res) => {
+const userLogin = async function (req, res) {
     try {
-        let mailId = req.body.email
-        let pwd = req.body.password
-
-        let user = await UserModel.findOne({ email: mailId, password: pwd })
-
-        if (!user)
-            return res.status(401).send({ status: false, warning: "Wrong email-id or password !" })
-
-        let token = jwt.sign(
+        const userId = req.body.email
+        const password = req.body.password
+        if (!userId) {
+            return res.status(400).send({ status: false, msg: 'UserId is required' })
+        }
+        if (!password) {
+            return res.status(400).send({ status: false, msg: 'Password is required' })
+        }
+        if(!emailValid.test(userId)){
+            return res.status(400).send({status : false, msg : 'Enter valid userId'})
+        }
+        const checkUser = await userModel.findOne({ email: userId, password: password })
+        if (!checkUser) {
+            return res.status(400).send({ status: false, msg: 'UserId or password is incorrect' })
+        }
+        const token = jwt.sign(
             {
-                userId: user._id,
-                email: mailId,
-                password: pwd
+                userId: checkUser._id.toString(),
+                batch: "Lithium",
+                iat: new Date()
             },
-            "fake password",
-            {
-                expiresIn: '24h'
-            }
-        )
-
-        let date = new Date();
-        // let iat = `Token Generated at:- ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-
-        res.setHeader("x-api-key", token)
-
-        res.status(200).send({ status: true, token: token, ExpiresIn: "Token valid for 24 hours from time of creation", IssuedAt: date })
+            'mySecretKey', { expiresIn: '1h' })
+        res.setHeader('x-api-key', token)
+        return res.status(200).send({ status: true, data: token })
     }
-    catch (error) {
-        res.status(500).send({ status: false, message: error.message })
+    catch (err) {
+        return res.status(500).send({ status: false, error: err.message })
     }
 }
+
+module.exports.userLogin = userLogin
+
+
+
+// exports.userLogin = async (req, res) => {
+//     try {
+//         let userId = req.body.email
+//         let pwd = req.body.password
+
+//         let user = await UserModel.findOne({ email: mailId, password: pwd })
+
+//         if (!user)
+//             return res.status(401).send({ status: false, warning: "Wrong email-id or password !" })
+
+//         let token = jwt.sign(
+//             {
+//                 userId: user._id,
+//                 email: mailId,
+//                 password: pwd
+//             },
+//             "fake password",
+//             {
+//                 expiresIn: '24h'
+//             }
+//         )
+
+//         let date = new Date();
+//         // let iat = `Token Generated at:- ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+
+//         res.setHeader("x-api-key", token)
+
+//         res.status(200).send({ status: true, token: token, ExpiresIn: "Token valid for 24 hours from time of creation", IssuedAt: date })
+//     }
+//     catch (error) {
+//         res.status(500).send({ status: false, message: error.message })
+//     }
+// }
