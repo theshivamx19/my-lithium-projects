@@ -35,7 +35,7 @@ exports.filterBookByQuery = async (req, res) => {
         if (filterBy) {
 
             let queryArr = Object.keys(filterBy)
-    
+
             if (queryArr.length > 3) return res.status(400).send({ status: false, message: "Invalid query detected !" })
 
             for (let i = 0; i < queryArr.length; i++) {
@@ -43,7 +43,6 @@ exports.filterBookByQuery = async (req, res) => {
                 if (!['userId', 'category', 'subcategory'].includes(queryArr[i])) {
                     return res.status(400).send({ status: false, message: "Invalid query detected !" })
                 }
-                break
             }
         }
 
