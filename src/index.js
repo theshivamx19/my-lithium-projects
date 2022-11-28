@@ -16,4 +16,4 @@ mongoose.connect("mongodb+srv://new_user:jk1BBWwmxQpZ31zO@cluster0.pxvwsjp.mongo
 
 app.use('/', route)
 
-app.listen((process.env.PORT || 3000), () => console.log("Server is running !"))
+app.listen((3000), () => console.log("Server is running !"))

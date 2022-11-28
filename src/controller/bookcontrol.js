@@ -3,20 +3,55 @@ const BookModel = require('../models/bookmodel')
 const UserModel = require("../models/usermodel")
 
 
+const ISBNRegex = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/  
+                //this regex is used for both 10 & 13 number digit and also including hyphen(-) 
+
+const reviewsRegex = /^\d{10}$/
+let releasedAtRegex = /^\d{4}-\d{2}-\d{2}$/
+
+
 exports.createBook = async (req, res) => {
 
     try {
         let data = req.body
-        let userId = data.userId
-
-        let validId = mongoose.isValidObjectId(userId)
-        if (validId == false) {
-            return res.status(400).send({ status: false, message: "Invalid user id !" })
+        let {title, excerpt, ISBN, category ,subcategory, reviews, userId ,releasedAt} = data
+        if(Object.keys(data).length === 0){
+            return res.status(400).send({status : false, msg : "body can not be empty"})
         }
-
-        let Id = await UserModel.findById(userId)
-
-        if (!Id) return res.status(404).send({ status: false, message: "User Id not found" })
+        if(!title || title == ""){
+            return res.status(400).send({status : false , msg : "please enter title"})
+        }
+        if(!excerpt || excerpt == ""){
+            return res.status(400).send({status : false , msg : "please enter excerpt"})
+        }
+        if(!userId || userId == ""){
+            return res.status(400).send({status : false , msg : "please enter userId"})
+        }
+        if(!mongoose.isValidObjectId(userId)){
+            return res.status(400).send({status : false , msg : "invalid userId"})
+        }
+        let findUserId = await UserModel.findById(userId)
+        if(!findUserId){
+            return res.status(400).send({status : false , msg : "userId can not exist"})
+        }
+        if(!ISBN || ISBN == ""){
+            return res.status(400).send({status : false , msg : "please enter ISBN "})
+        }
+        if(!ISBNRegex.test(ISBN)){
+            return res.status(400).send({status : false , msg : "ISBN is not valid"})
+        }
+        if(!category || category == ""){
+            return res.status(400).send({status : false , msg : "please enter the category"})
+        }
+        if(!subcategory || subcategory == ""){
+            return res.status(400).send({status : false , msg : "please enter subcategory"})
+        }
+        if(!releasedAt){
+            return res.status(400).send({status : false , msg : "please enter releasedAt date of books"})
+        }
+        if(!releasedAtRegex.test(releasedAt)){
+            return res.status(400).send({status :  false , msg : "invalid date formate"})
+        }
 
         let bookData = await BookModel.create(data)
 
