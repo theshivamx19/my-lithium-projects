@@ -36,6 +36,7 @@ exports.createUser = async (req, res) => {
         phone = phone.trim()
 
         if (!phone.match(phoneValid)) { return res.status(400).send({ status: false, message: "Please provide a valid phone" }) }
+        
         let uniquePhone = await UserModel.findOne({ phone })
         if (uniquePhone) { return res.status(400).send({ status: false, message: "Please provide a Unique phone" }) }
 
@@ -61,7 +62,7 @@ exports.createUser = async (req, res) => {
 
 exports.userLogin = async (req, res) => {
     try {
-        const {emailId, password} = req.body
+        const {email, password} = req.body
 
         if (req.body) {
             let arr = Object.keys(req.body)
@@ -77,28 +78,27 @@ exports.userLogin = async (req, res) => {
         }
 
 
-        if (!emailId) {
-            return res.status(400).send({ status: false, message: 'emailId is required' })
+        if (!email) {
+            return res.status(400).send({ status: false, message: 'Email is required' })
         }
         if (!password) {
             return res.status(400).send({ status: false, message: 'Password is required' })
         }
-        if (!emailValid.test(emailId)) {
-            return res.status(400).send({ status: false, message: 'Enter valid emailId' })
+        if (!emailValid.test(email)) {
+            return res.status(400).send({ status: false, message: 'Enter valid email' })
         }
 
-        const checkUser = await UserModel.findOne({ email: emailId, password: password })
+        const checkUser = await UserModel.findOne({ email: email, password: password })
         if (!checkUser) {
-            return res.status(401).send({ status: false, message: 'emailId or password is incorrect' })
+            return res.status(401).send({ status: false, message: 'email or password is incorrect' })
         }
 
         const token = jwt.sign(
             {
-                emailId: checkUser._id.toString(),
-                batch: "Lithium",
-                iat: new Date()
+                email: checkUser._id.toString(),
+                batch: "Lithium"
             },
-            "SecretKey", { expiresIn: '1h' })
+            "SecretKey", { expiresIn: '24h' })
 
         res.setHeader('x-api-key', token)
 
