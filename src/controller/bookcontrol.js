@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const BookModel = require("../models/bookmodel")
 const UserModel = require("../models/usermodel")
 const ReviewModel = require("../models/reviewmodel")
+const{isValidObjectId} = mongoose
 
 
 //this regex is used for both 10 & 13 number digit and also including hyphen(-) 
@@ -23,9 +24,9 @@ exports.createBook = async (req, res) => {
         if (!title || title.trim() == "") {
             return res.status(400).send({ status: false, message: "Please enter title" })
         }
-        let duplicacyCheck = await BookModel.findOne({title : title})
-        if(duplicacyCheck){
-            return res.status(400).send({status : false , message : "title is alredy present"})
+        let duplicacyCheck = await BookModel.findOne({ title: title })
+        if (duplicacyCheck) {
+            return res.status(400).send({ status: false, message: "title is alredy present" })
         }
 
         if (!excerpt || excerpt.trim() == "") {
@@ -34,7 +35,7 @@ exports.createBook = async (req, res) => {
         if (!userId || userId == "") {
             return res.status(400).send({ status: false, message: "Please enter user id" })
         }
-        if (!mongoose.isValidObjectId(userId)) {
+        if (!isValidObjectId(userId)) {
             return res.status(400).send({ status: false, message: "Invalid user id" })
         }
         let findUserId = await UserModel.findById(userId)
@@ -44,9 +45,9 @@ exports.createBook = async (req, res) => {
         if (!ISBN || ISBN.trim() == "") {
             return res.status(400).send({ status: false, message: "Please enter ISBN" })
         }
-        let ISBNDuplicacy = await BookModel.findOne({ISBN : ISBN})
-        if(ISBNDuplicacy){
-            return res.status(400).send({status : false , message : "ISBN alredy exists"})
+        let ISBNDuplicacy = await BookModel.findOne({ ISBN: ISBN })
+        if (ISBNDuplicacy) {
+            return res.status(400).send({ status: false, message: "ISBN alredy exists" })
         }
         if (!ISBNRegex.test(ISBN)) {
             return res.status(400).send({ status: false, message: "ISBN is not valid" })
@@ -139,5 +140,19 @@ exports.getBookById = async (req, res) => {
     }
     catch (error) {
         res.status(500).send({ status: false, message: error.message })
+    }
+}
+
+exports.deleteBookByBookId = async (req, res) => {
+    try {
+        let bookId = req.params.bookId
+        if (!isValidObjectId(bookId)) { return res.status(400).send({ status: false, message: "Pls provide a valid book Id" }) }
+        let checkbook = await BookModel.findOne({ _id: bookId, isDeleted: false })
+        if (!checkbook) { return res.status(404).send({ status: false, message: "No book exists with this BookId" }) }
+        await BookModel.findOneAndUpdate({ _id: bookId, isDeleted: false },
+            { $set: { isDeleted: true } })
+        return res.status(200).send({ status: true, message: "Successfully Deleted" })
+    } catch (error) {
+        return res.status(500).send({ status: false, message: error.message })
     }
 }
