@@ -94,11 +94,13 @@ exports.filterBookByQuery = async (req, res) => {
 
         let filteredBook = await BookModel.find({ isDeleted: false, ...filterBy }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 })
 
+        let sortedBook = filteredBook.sort((a, b) => a.title.localeCompare(b.title))
+
         if (Object.keys(filteredBook).length == 0) {
             return res.status(404).send({ status: false, message: "No data found !" })
         }
 
-        res.status(200).send({ status: true, message: 'Books list', data: filteredBook })
+        res.status(200).send({ status: true, message: 'Books list', data: sortedBook })
     }
     catch (error) {
         res.status(500).send({ status: false, message: error.message })

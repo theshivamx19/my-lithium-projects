@@ -98,7 +98,7 @@ exports.userLogin = async (req, res) => {
                 email: checkUser._id.toString(),
                 batch: "Lithium"
             },
-            "SecretKey", { expiresIn: '24h' })
+            "SecretKey", { expiresIn: '1h' })
 
         res.setHeader('x-api-key', token)
 
