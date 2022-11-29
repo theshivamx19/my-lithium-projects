@@ -14,25 +14,13 @@ exports.createBook = async (req, res) => {
     try {
         let data = req.body
         let { title, excerpt, ISBN, category, subcategory, userId, releasedAt } = data
-
-        if (data) {
-            let arr = Object.keys(data)
-
-            if (arr.length > 7) return res.status(400).send({ status: false, message: "Key names must be within these: ('title', 'excerpt', 'ISBN', 'category', 'subcategory', 'userId', 'releasedAt')" })
-
-            for (let i = 0; i < arr.length; i++) {
-
-                if (!['title', 'excerpt', 'ISBN', 'category', 'subcategory', 'userId', 'releasedAt'].includes(arr[i]))
-
-                    return res.status(400).send({ status: false, message: "Key names must be within these: ('title', 'excerpt', 'ISBN', 'category', 'subcategory', 'userId', 'releasedAt')" })
-            }
-        }
         
-
-        if (!title || title == "") {
+        //  title = title.trim()
+        if (!title || title.trim()== "") {
             return res.status(400).send({ status: false, message: "Please enter title" })
         }
-        if (!excerpt || excerpt == "") {
+       
+        if (!excerpt || excerpt.trim() == "" ) {
             return res.status(400).send({ status: false, message: "Please enter excerpt" })
         }
         if (!userId || userId == "") {
@@ -45,19 +33,19 @@ exports.createBook = async (req, res) => {
         if (!findUserId) {
             return res.status(400).send({ status: false, message: "User id do not exist" })
         }
-        if (!ISBN || ISBN == "") {
+        if (!ISBN || ISBN.trim() == "") {
             return res.status(400).send({ status: false, message: "Please enter ISBN" })
         }
         if (!ISBNRegex.test(ISBN)) {
             return res.status(400).send({ status: false, message: "ISBN is not valid" })
         }
-        if (!category || category == "") {
+        if (!category || category.trim() == "") {
             return res.status(400).send({ status: false, message: "Please enter the category of the book" })
         }
-        if (!subcategory || subcategory == "") {
+        if (!subcategory || subcategory.trim() == "") {
             return res.status(400).send({ status: false, message: "Please enter subcategory" })
         }
-        if (!releasedAt || releasedAt == "") {
+        if (!releasedAt || releasedAt.trim() == "") {
             return res.status(400).send({ status: false, message: "Please enter release date of the book" })
         }
         if (!releasedAtRegex.test(releasedAt)) {

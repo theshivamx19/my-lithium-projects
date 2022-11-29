@@ -8,7 +8,8 @@ const bookSchema = new mongoose.Schema({
     title: {
         type: String,
         require: true,
-        unique: true
+        unique: true,
+        
     },
     excerpt: {
         type: String,

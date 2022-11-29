@@ -10,21 +10,6 @@ exports.createUser = async (req, res) => {
     try {
         let data = req.body
         let { title, name, phone, email, password } = data
-
-        if (data) {
-            let arr = Object.keys(data)
-
-            if (arr.length > 6) return res.status(400).send({ status: false, message: "Key names must be within these: ('title', 'name', 'phone', 'email', 'password', 'address')" })
-
-            for (let i = 0; i < arr.length; i++) {
-
-                if (!['title', 'name', 'phone', 'email', 'password', 'address'].includes(arr[i]))
-
-                    return res.status(400).send({ status: false, message: "Key names must be within these: ('title', 'name', 'phone', 'email', 'password', 'address')" })
-            }
-        }
-
-
         if (!title) { return res.status(400).send({ status: false, message: "Title is mandatory" }) }
         if (!["Mr", "Mrs", "Miss"].includes(title)) { return res.status(400).send({ status: false, message: "Please provide a valid title - Mr , Mrs , Miss" }) }
 
@@ -63,21 +48,6 @@ exports.createUser = async (req, res) => {
 exports.userLogin = async (req, res) => {
     try {
         const {email, password} = req.body
-
-        if (req.body) {
-            let arr = Object.keys(req.body)
-
-            if (arr.length > 2) return res.status(400).send({ status: false, message: "Key names must be within these: ('email', 'password')" })
-
-            for (let i = 0; i < arr.length; i++) {
-
-                if (!['email', 'password'].includes(arr[i]))
-
-                    return res.status(400).send({ status: false, message: "Key names must be within these: ('email', 'password')" })
-            }
-        }
-
-
         if (!email) {
             return res.status(400).send({ status: false, message: 'Email is required' })
         }
@@ -98,7 +68,7 @@ exports.userLogin = async (req, res) => {
                 email: checkUser._id.toString(),
                 batch: "Lithium"
             },
-            "SecretKey", { expiresIn: '1h' })
+            "SecretKey", { expiresIn: '30s' })
 
         res.setHeader('x-api-key', token)
 
