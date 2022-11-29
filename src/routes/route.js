@@ -1,29 +1,30 @@
 const express = require('express')
 const router = express.Router()
 
-const UserCtrl = require("../controller/usercontrol")
-const BookCtrl = require("../controller/bookcontrol")
-const ReviewCtrl = require("../controller/reviewcontrol")
-const MiddleWare = require("../middleware/validware")
+const userCtrl = require("../controller/usercontrol")
+const bookCtrl = require("../controller/bookcontrol")
+const reviewCtrl = require("../controller/reviewcontrol")
+const mwAuthentication = require("../middleware/authware")
+
 
 
 router.get("/servertest", (req, res) => res.send("Server is working fine !"))
 
 
-router.post("/register", MiddleWare.checkBody, UserCtrl.createUser)
-router.post("/login", MiddleWare.checkBody, UserCtrl.userLogin)
+router.post("/register",  userCtrl.createUser)
+router.post("/login", userCtrl.userLogin)
 
 
-router.post("/books", MiddleWare.checkBody, BookCtrl.createBook)
-router.get("/books", BookCtrl.filterBookByQuery)
-router.get("/books/:bookId", BookCtrl.getBookById)
-// router.put("/books/:bookId", BookCtrl)
-// router.delete("/books/:bookId", BookCtrl)
+router.post("/books",mwAuthentication.authentication, bookCtrl.createBook)
+router.get("/books", mwAuthentication.authentication,bookCtrl.filterBookByQuery)
+router.get("/books/:bookId", bookCtrl.getBookById)
+// router.put("/books/:bookId", bookCtrl)
+// router.delete("/books/:bookId", bookCtrl)
 
 
-router.post("/books/:bookId/review", ReviewCtrl.createReview)
-// router.put("/books/:bookId/review/:reviewId", ReviewCtrl)
-// router.delete("/books/:bookId/review/:reviewId", ReviewCtrl)
+router.post("/books/:bookId/review", reviewCtrl.createReview)
+// router.put("/books/:bookId/review/:reviewId", reviewCtrl)
+// router.delete("/books/:bookId/review/:reviewId", reviewCtrl)
 
 
 module.exports = router

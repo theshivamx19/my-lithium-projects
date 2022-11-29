@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const BookModel = require("../models/bookmodel")
+const bookModel = require("../models/bookmodel")
 const UserModel = require("../models/usermodel")
 
 
@@ -22,6 +22,10 @@ exports.createBook = async (req, res) => {
         if (!title || title.trim()== "") {
             return res.status(400).send({ status: false, message: "Please enter title" })
         }
+        let duplicacyCheck = await bookModel.findOne({title : title})
+        if(duplicacyCheck){
+            return res.status(400).send({status : false , message : "title is alredy present"})
+        }
        
         if (!excerpt || excerpt.trim() == "" ) {
             return res.status(400).send({ status: false, message: "Please enter excerpt" })
@@ -38,6 +42,10 @@ exports.createBook = async (req, res) => {
         }
         if (!ISBN || ISBN.trim() == "") {
             return res.status(400).send({ status: false, message: "Please enter ISBN" })
+        }
+        let ISBNDuplicacy = await bookModel.findOne({ISBN : ISBN})
+        if(ISBNDuplicacy){
+            return res.status(400).send({status : false , message : "ISBN alredy exists"})
         }
         if (!ISBNRegex.test(ISBN)) {
             return res.status(400).send({ status: false, message: "ISBN is not valid" })
