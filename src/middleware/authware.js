@@ -36,8 +36,15 @@ exports.authorization = async (req, res, next) => {
 
         let pathBlogId = req.params.blogId
 
+
         if (pathBlogId) {
+            
             let findBlog = await blogModel.findOne({ _id: pathBlogId })
+
+            if (Object.keys(findBlog).length == 0) {
+                return res.status(404).send({ status: false, message: 'Book not found !' })
+            }
+
             let blogUserId = findBlog.UserId
 
             if (tokenUserId != blogUserId) {

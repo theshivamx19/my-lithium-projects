@@ -160,8 +160,8 @@ exports.updateBookById = async (req, res) => {
         let { title, ISBN, excerpt, releasedAt } = data
 
         if (title) {
-            let checktitle = await BookModel.findOne({ title })
-            if (checktitle) { return res.status(400).send({ status: false, message: "Please provide a Unique title" }) }
+            let checkTitle = await BookModel.findOne({ title })
+            if (checkTitle) { return res.status(400).send({ status: false, message: "Please provide a Unique title" }) }
         }
         if (ISBN) {
             let checkISBN = await BookModel.findOne({ ISBN })
@@ -181,13 +181,19 @@ exports.updateBookById = async (req, res) => {
 exports.deleteBookById = async (req, res) => {
     try {
         let bookId = req.params.bookId
+
         if (!isValidObjectId(bookId)) { return res.status(400).send({ status: false, message: "Please provide a valid book Id" }) }
+
         let checkbook = await BookModel.findOne({ _id: bookId, isDeleted: false })
+
         if (!checkbook) { return res.status(404).send({ status: false, message: "No book exists with this BookId" }) }
+
         await BookModel.findOneAndUpdate({ _id: bookId, isDeleted: false },
             { $set: { isDeleted: true } })
+
         return res.status(200).send({ status: true, message: "Successfully Deleted" })
-    } catch (error) {
+    } 
+    catch (error) {
         return res.status(500).send({ status: false, message: error.message })
     }
 }

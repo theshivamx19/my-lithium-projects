@@ -30,7 +30,7 @@ const bookSchema = new mongoose.Schema({
         require: true
     },
     subcategory: {
-        type: [String],
+        type: String,
         require: true
     },
     reviews: {
