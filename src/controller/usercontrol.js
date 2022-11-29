@@ -79,7 +79,7 @@ exports.userLogin = async (req, res) => {
                 batch: "Lithium",
                 IssuedAt: new Date()
             },
-            "SecretKey", { expiresIn: '30s' })
+            "SecretKey", { expiresIn: '5m' })
 
         res.setHeader('x-api-key', token)
 
