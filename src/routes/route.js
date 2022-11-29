@@ -18,7 +18,7 @@ router.post("/login", userCtrl.userLogin)
 router.post("/books",mwAuthentication.authentication, bookCtrl.createBook)
 router.get("/books", mwAuthentication.authentication,bookCtrl.filterBookByQuery)
 router.get("/books/:bookId", bookCtrl.getBookById)
-// router.put("/books/:bookId", bookCtrl)
+router.put("/books/:bookId", bookCtrl.updateBookById)
 router.delete("/books/:bookId", mwAuthentication.authentication, bookCtrl.deleteBookByBookId)
 
 

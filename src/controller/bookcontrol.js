@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const BookModel = require("../models/bookmodel")
 const UserModel = require("../models/usermodel")
 const ReviewModel = require("../models/reviewmodel")
-const{isValidObjectId} = mongoose
+const { isValidObjectId } = mongoose
 
 
 //this regex is used for both 10 & 13 number digit and also including hyphen(-) 
@@ -140,6 +140,31 @@ exports.getBookById = async (req, res) => {
     }
     catch (error) {
         res.status(500).send({ status: false, message: error.message })
+    }
+}
+
+exports.updateBookById = async (req, res) => {
+    try {
+        let bookId = req.params.bookId
+        if (!isValidObjectId(bookId)) { return res.status(400).send({ status: false, message: "Pls provide a valid BookId" }) }
+        let bookExists = await BookModel.findOne({_id:bookId,isDeleted:false})
+        if(!bookExists){return res.status(404).send({status:false,message:"No book exist with this bookId"})}
+        let data = req.body
+        if(Object.keys(data).length==0){return res.status(400).send({status:false,message:"Pls provide data in Body"})}
+        let {title,ISBN,excerpt,releasedAt}=data
+        if(title){
+            let checktitle = await BookModel.findOne({title})
+            if(checktitle){return res.status(400).send({status:false,message:"Pls provide a Unique title"})}
+        }
+        if(ISBN){
+            let checkISBN = await BookModel.findOne({ISBN})
+            if(checkISBN){return res.status(400).send({status:false,message:"Pls provide a Unique ISBN"})} 
+        }
+        let updateBookById = await BookModel.findOneAndUpdate({_id:bookId,isDeleted:false},
+            {$set:{title,ISBN,excerpt,releasedAt}},{new:true})
+            return res.status(200).send({status:true,message:'Success',data:updateBookById})
+    } catch (error) {
+        return res.status(500).send({ status: false, message: error.message })
     }
 }
 
