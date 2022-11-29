@@ -75,9 +75,8 @@ exports.userLogin = async (req, res) => {
 
         const token = jwt.sign(
             {
-                email: checkUser._id.toString(),
-                batch: "Lithium",
-                IssuedAt: new Date()
+                userId: checkUser._id.toString(),
+                batch: "Lithium"
             },
             "SecretKey", { expiresIn: '5m' })
 

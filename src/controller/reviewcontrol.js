@@ -4,6 +4,7 @@ const BookModel = require("../models/bookmodel")
 exports.createReview = async (req, res) => {
     try {
 
+        let bookId = req.path.bookId
         let data = req.body
 
         let reviewData = await ReviewModel.create(data)

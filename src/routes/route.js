@@ -4,7 +4,7 @@ const router = express.Router()
 const userCtrl = require("../controller/usercontrol")
 const bookCtrl = require("../controller/bookcontrol")
 const reviewCtrl = require("../controller/reviewcontrol")
-const mwAuthentication = require("../middleware/authware")
+const authWare = require("../middleware/authware")
 
 
 
@@ -15,8 +15,8 @@ router.post("/register",  userCtrl.createUser)
 router.post("/login", userCtrl.userLogin)
 
 
-router.post("/books",mwAuthentication.authentication, bookCtrl.createBook)
-router.get("/books", mwAuthentication.authentication,bookCtrl.filterBookByQuery)
+router.post("/books",authWare.authentication, authWare.authorization, bookCtrl.createBook)
+router.get("/books", authWare.authentication, bookCtrl.filterBookByQuery)
 router.get("/books/:bookId", bookCtrl.getBookById)
 // router.put("/books/:bookId", bookCtrl)
 // router.delete("/books/:bookId", bookCtrl)
