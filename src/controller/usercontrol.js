@@ -10,6 +10,11 @@ exports.createUser = async (req, res) => {
     try {
         let data = req.body
         let { title, name, phone, email, password } = data
+
+        if (Object.keys(data).length == 0) {
+            return res.status(400).send({ status: false, message: "Body can not be empty" })
+        }
+
         if (!title) { return res.status(400).send({ status: false, message: "Title is mandatory" }) }
         if (!["Mr", "Mrs", "Miss"].includes(title)) { return res.status(400).send({ status: false, message: "Please provide a valid title - Mr , Mrs , Miss" }) }
 
@@ -21,7 +26,7 @@ exports.createUser = async (req, res) => {
         phone = phone.trim()
 
         if (!phone.match(phoneValid)) { return res.status(400).send({ status: false, message: "Please provide a valid phone" }) }
-        
+
         let uniquePhone = await UserModel.findOne({ phone })
         if (uniquePhone) { return res.status(400).send({ status: false, message: "Please provide a Unique phone" }) }
 
@@ -47,7 +52,12 @@ exports.createUser = async (req, res) => {
 
 exports.userLogin = async (req, res) => {
     try {
-        const {email, password} = req.body
+        const { email, password } = req.body
+
+        if (Object.keys(req.body).length == 0) {
+            return res.status(400).send({ status: false, message: "Body can not be empty" })
+        }
+
         if (!email) {
             return res.status(400).send({ status: false, message: 'Email is required' })
         }
@@ -66,13 +76,14 @@ exports.userLogin = async (req, res) => {
         const token = jwt.sign(
             {
                 email: checkUser._id.toString(),
-                batch: "Lithium"
+                batch: "Lithium",
+                IssuedAt: new Date()
             },
             "SecretKey", { expiresIn: '30s' })
 
         res.setHeader('x-api-key', token)
 
-        return res.status(200).send({ status: true, data: { token: token, ExpiresIn: "Token is valid for 1 hour from time of creation", IssuedAt: new Date() } })
+        return res.status(200).send({ status: true, data: { token: token, ExpiresIn: "Token is valid for 30 sec from time of creation", IssuedAt: new Date() } })
     }
     catch (err) {
         return res.status(500).send({ status: false, error: err.message })

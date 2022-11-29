@@ -15,7 +15,10 @@ exports.createBook = async (req, res) => {
         let data = req.body
         let { title, excerpt, ISBN, category, subcategory, userId, releasedAt } = data
         
-        //  title = title.trim()
+        if (Object.keys(data).length == 0) {
+            return res.status(400).send({ status: false, message: "Body can not be empty" })
+        }
+
         if (!title || title.trim()== "") {
             return res.status(400).send({ status: false, message: "Please enter title" })
         }
@@ -81,12 +84,12 @@ exports.filterBookByQuery = async (req, res) => {
         }
 
         let filteredBook = await BookModel.find({ isDeleted: false, ...filterBy }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 })
-
-        let sortedBook = filteredBook.sort((a, b) => a.title.localeCompare(b.title))
-
+        
         if (Object.keys(filteredBook).length == 0) {
             return res.status(404).send({ status: false, message: "No data found !" })
         }
+        
+        let sortedBook = filteredBook.sort((a, b) => a.title.localeCompare(b.title))
 
         res.status(200).send({ status: true, message: 'Books list', data: sortedBook })
     }
