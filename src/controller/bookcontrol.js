@@ -26,7 +26,7 @@ exports.createBook = async (req, res) => {
         }
         let duplicacyCheck = await BookModel.findOne({ title: title })
         if (duplicacyCheck) {
-            return res.status(400).send({ status: false, message: "title is alredy present" })
+            return res.status(400).send({ status: false, message: "title is already present" })
         }
 
         if (!excerpt || excerpt.trim() == "") {
