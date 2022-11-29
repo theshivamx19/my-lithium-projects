@@ -17,9 +17,9 @@ router.post("/login", userCtrl.userLogin)
 
 router.post("/books",authWare.authentication, authWare.authorization, bookCtrl.createBook)
 router.get("/books", authWare.authentication, bookCtrl.filterBookByQuery)
-router.get("/books/:bookId", bookCtrl.getBookById)
+router.get("/books/:bookId", authWare.authentication, bookCtrl.getBookById)
 // router.put("/books/:bookId", bookCtrl)
-router.delete("/books/:bookId", mwAuthentication.authentication, bookCtrl.deleteBookByBookId)
+router.delete("/books/:bookId", authWare.authentication, authWare.authorization, bookCtrl.deleteBookById)
 
 
 router.post("/books/:bookId/review", reviewCtrl.createReview)

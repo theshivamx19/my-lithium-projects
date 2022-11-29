@@ -143,7 +143,7 @@ exports.getBookById = async (req, res) => {
     }
 }
 
-exports.deleteBookByBookId = async (req, res) => {
+exports.deleteBookById = async (req, res) => {
     try {
         let bookId = req.params.bookId
         if (!isValidObjectId(bookId)) { return res.status(400).send({ status: false, message: "Pls provide a valid book Id" }) }
