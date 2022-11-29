@@ -19,7 +19,7 @@ router.post("/books",mwAuthentication.authentication, bookCtrl.createBook)
 router.get("/books", mwAuthentication.authentication,bookCtrl.filterBookByQuery)
 router.get("/books/:bookId", bookCtrl.getBookById)
 // router.put("/books/:bookId", bookCtrl)
-// router.delete("/books/:bookId", bookCtrl)
+router.delete("/books/:bookId", mwAuthentication.authentication, bookCtrl.deleteBookByBookId)
 
 
 router.post("/books/:bookId/review", reviewCtrl.createReview)
