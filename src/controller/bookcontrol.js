@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const BookModel = require("../models/bookmodel")
 const UserModel = require("../models/usermodel")
+const ReviewModel = require("../models/reviewmodel")
 
 
 //this regex is used for both 10 & 13 number digit and also including hyphen(-) 
@@ -14,16 +15,16 @@ exports.createBook = async (req, res) => {
     try {
         let data = req.body
         let { title, excerpt, ISBN, category, subcategory, userId, releasedAt } = data
-        
+
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ status: false, message: "Body can not be empty" })
         }
 
-        if (!title || title.trim()== "") {
+        if (!title || title.trim() == "") {
             return res.status(400).send({ status: false, message: "Please enter title" })
         }
-       
-        if (!excerpt || excerpt.trim() == "" ) {
+
+        if (!excerpt || excerpt.trim() == "") {
             return res.status(400).send({ status: false, message: "Please enter excerpt" })
         }
         if (!userId || userId == "") {
@@ -77,18 +78,18 @@ exports.filterBookByQuery = async (req, res) => {
             for (let i = 0; i < queryArr.length; i++) {
 
                 if (!['userId', 'category', 'subcategory'].includes(queryArr[i])) {
-                    
+
                     return res.status(400).send({ status: false, message: "Queries must be within these: ('userId', 'category', 'subcategory')" })
                 }
             }
         }
 
         let filteredBook = await BookModel.find({ isDeleted: false, ...filterBy }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 })
-        
+
         if (Object.keys(filteredBook).length == 0) {
             return res.status(404).send({ status: false, message: "No data found !" })
         }
-        
+
         let sortedBook = filteredBook.sort((a, b) => a.title.localeCompare(b.title))
 
         res.status(200).send({ status: true, message: 'Books list', data: sortedBook })
@@ -103,13 +104,30 @@ exports.getBookById = async (req, res) => {
     try {
         let bookId = req.params.bookId
 
-        let filteredBook = await BookModel.findOne({ isDeleted: false, _id: bookId })
+        let book = await BookModel.findOne({ isDeleted: false, _id: bookId })
 
-        if (Object.keys(filteredBook).length == 0) {
+        if (Object.keys(book).length == 0) {
             return res.status(404).send({ status: false, message: "No data found !" })
         }
 
-        res.status(200).send({ status: true, books: filteredBook })
+        let review = await ReviewModel.find({ isDeleted: false, bookId: bookId }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
+
+        let data = {
+            _id: book._id,
+            title: book.title,
+            excerpt: book.excerpt,
+            userId: book.userId,
+            category: book.category,
+            subcategory: book.subcategory,
+            isDeleted: book.isDeleted,
+            reviews: book.releasedAt,
+            releasedAt: book.releasedAt,
+            createdAt: book.createdAt,
+            updatedAt: book.updatedAt,
+            reviewsData: review
+        }
+
+        res.status(200).send({ status: true, message: 'Books list', data })
     }
     catch (error) {
         res.status(500).send({ status: false, message: error.message })

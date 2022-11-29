@@ -10,11 +10,11 @@ const MiddleWare = require("../middleware/validware")
 router.get("/servertest", (req, res) => res.send("Server is working fine !"))
 
 
-router.post("/register", MiddleWare.checkBody, UserCtrl.createUser)
-router.post("/login", MiddleWare.checkBody, UserCtrl.userLogin)
+router.post("/register", UserCtrl.createUser)
+router.post("/login", UserCtrl.userLogin)
 
 
-router.post("/books", MiddleWare.checkBody, BookCtrl.createBook)
+router.post("/books", BookCtrl.createBook)
 router.get("/books", BookCtrl.filterBookByQuery)
 router.get("/books/:bookId", BookCtrl.getBookById)
 // router.put("/books/:bookId", BookCtrl)
