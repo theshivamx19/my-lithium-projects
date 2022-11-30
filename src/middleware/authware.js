@@ -8,12 +8,13 @@ exports.authentication = function (req, res, next) {
     try {
         let token = req.headers["x-api-key"]
         // console.log(token)
-        if (!token) return res.status(400).send({ status: false, msg: "token must be present" });
+        if (!token) return res.status(400).send({ status: false, message: "token must be present" });
 
         jwt.verify(token, "SecretKey", function (err, decodedToken) {
             if (err) {
-                return res.status(400).send({ status: false, msg: "token invalid" })
-            } else {
+                return res.status(401).send({ status: false, message: "token invalid" })
+            }
+            else {
                 req.token = decodedToken
                 next()
             }
@@ -36,9 +37,8 @@ exports.authorization = async (req, res, next) => {
 
         let pathBookId = req.params.bookId
 
-
         if (pathBookId) {
-            
+
             let findBook = await bookModel.findOne({ _id: pathBookId })
 
             if (Object.keys(findBook).length == 0) {

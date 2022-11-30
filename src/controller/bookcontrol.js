@@ -21,13 +21,27 @@ exports.createBook = async (req, res) => {
             return res.status(400).send({ status: false, message: "Body can not be empty" })
         }
 
+
         if (!title || title.trim() == "") {
             return res.status(400).send({ status: false, message: "Please enter title" })
         }
-        let duplicacyCheck = await BookModel.findOne({ title: title })
-        if (duplicacyCheck) {
-            return res.status(400).send({ status: false, message: "title is already present" })
+
+        let unique = await UserModel.findOne({ $or: [{ title: title }, { ISBN: ISBN }] })
+        if (unique) {
+            if (unique.title == title) return res.status(400).send({ status: false, message: "title is already present" })
         }
+
+        if (!ISBN || ISBN.trim() == "") {
+            return res.status(400).send({ status: false, message: "Please enter ISBN" })
+        }
+        if (!ISBNRegex.test(ISBN)) {
+            return res.status(400).send({ status: false, message: "ISBN is not valid" })
+        }
+
+        if (unique) {
+            if (unique.ISBN == ISBN) return res.status(400).send({ status: false, message: "ISBN already exists" })
+        }
+
 
         if (!excerpt || excerpt.trim() == "") {
             return res.status(400).send({ status: false, message: "Please enter excerpt" })
@@ -42,16 +56,9 @@ exports.createBook = async (req, res) => {
         if (!findUserId) {
             return res.status(400).send({ status: false, message: "User id do not exist" })
         }
-        if (!ISBN || ISBN.trim() == "") {
-            return res.status(400).send({ status: false, message: "Please enter ISBN" })
-        }
-        let ISBNDuplicacy = await BookModel.findOne({ ISBN: ISBN })
-        if (ISBNDuplicacy) {
-            return res.status(400).send({ status: false, message: "ISBN alredy exists" })
-        }
-        if (!ISBNRegex.test(ISBN)) {
-            return res.status(400).send({ status: false, message: "ISBN is not valid" })
-        }
+
+
+
         if (!category || category.trim() == "") {
             return res.status(400).send({ status: false, message: "Please enter the category of the book" })
         }
@@ -113,30 +120,18 @@ exports.getBookById = async (req, res) => {
     try {
         let bookId = req.params.bookId
 
-        let book = await BookModel.findOne({ isDeleted: false, _id: bookId })
+        let book = await BookModel.findOne({ isDeleted: false, _id: bookId }).lean()
 
-        if (Object.keys(book).length == 0) {
+
+        if (!book) {
             return res.status(404).send({ status: false, message: "No data found !" })
         }
 
-        let review = await ReviewModel.find({ isDeleted: false, bookId: bookId }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
+        let review = await ReviewModel.find({ isDeleted: false, bookId: bookId }).select({ bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
 
-        let data = {
-            _id:         book._id,
-            title:       book.title,
-            excerpt:     book.excerpt,
-            userId:      book.userId,
-            category:    book.category,
-            subcategory: book.subcategory,
-            isDeleted:   book.isDeleted,
-            reviews:     book.releasedAt,
-            releasedAt:  book.releasedAt,
-            createdAt:   book.createdAt,
-            updatedAt:   book.updatedAt,
-            reviewsData: review
-        }
+        book.reviewsData = review
 
-        res.status(200).send({ status: true, message: 'Books list', data })
+        res.status(200).send({ status: true, message: 'Books list', data: book })
     }
     catch (error) {
         res.status(500).send({ status: false, message: error.message })
@@ -159,14 +154,15 @@ exports.updateBookById = async (req, res) => {
 
         let { title, ISBN, excerpt, releasedAt } = data
 
-        if (title) {
-            let checkTitle = await BookModel.findOne({ title })
-            if (checkTitle) { return res.status(400).send({ status: false, message: "Please provide a Unique title" }) }
+
+        let unique = await BookModel.findOne({ $or: [{ title: title }, { ISBN: ISBN }] })
+
+        if (unique) {
+            if (unique.title == title) { return res.status(400).send({ status: false, message: "Please provide a Unique title" }) }
+
+            if (unique.ISBN == ISBN) { return res.status(400).send({ status: false, message: "Please provide a Unique ISBN" }) }
         }
-        if (ISBN) {
-            let checkISBN = await BookModel.findOne({ ISBN })
-            if (checkISBN) { return res.status(400).send({ status: false, message: "Please provide a Unique ISBN" }) }
-        }
+
 
         let updateBookById = await BookModel.findOneAndUpdate({ _id: bookId, isDeleted: false },
             { $set: { title, ISBN, excerpt, releasedAt } }, { new: true })
@@ -189,12 +185,12 @@ exports.deleteBookById = async (req, res) => {
         if (!checkbook) { return res.status(404).send({ status: false, message: "No book exists with this BookId" }) }
 
         await BookModel.findOneAndUpdate({ _id: bookId, isDeleted: false },
-            { $set: { isDeleted: true , reviews: 0} })
-        
-        await ReviewModel.updateMany({isDeleted: false, bookId: bookId}, {$set: {isDeleted: true}})
+            { $set: { isDeleted: true, reviews: 0 } })
+
+        await ReviewModel.updateMany({ isDeleted: false, bookId: bookId }, { $set: { isDeleted: true } })
 
         return res.status(200).send({ status: true, message: "Successfully Deleted" })
-    } 
+    }
     catch (error) {
         return res.status(500).send({ status: false, message: error.message })
     }

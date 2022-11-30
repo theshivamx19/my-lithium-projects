@@ -27,16 +27,21 @@ exports.createUser = async (req, res) => {
 
         if (!phone.match(phoneValid)) { return res.status(400).send({ status: false, message: "Please provide a valid phone" }) }
 
-        let uniquePhone = await UserModel.findOne({ phone })
-        if (uniquePhone) { return res.status(400).send({ status: false, message: "Please provide a Unique phone" }) }
+
+        let unique = await UserModel.findOne({ $or: [{ phone: phone }, { email: email }] })
+        if (unique) {
+            if (unique.phone == phone) return res.status(400).send({ status: false, message: "Please provide a Unique phone" })
+        }
+
+        data.email = email.toLowerCase()
 
         if (!email) { return res.status(400).send({ status: false, message: "Email is mandatory" }) }
         if (!email.match(emailValid)) { return res.status(400).send({ status: false, message: "Please provide a valid email" }) }
 
-        data.email = email.toLowerCase()
+        if (unique) {
+            if (unique.email == email) return res.status(400).send({ status: false, message: "Please provide a unique email" })
+        }
 
-        let uniqueEmail = await UserModel.findOne({ email })
-        if (uniqueEmail) { return res.status(400).send({ status: false, message: "Please provide a unique email" }) }
 
         if (!password) { return res.status(400).send({ status: false, message: "Password is mandatory" }) }
         if (password.length < 8 || password.length > 15) { return res.status(400).send({ status: false, message: "Password length must be between 8-15" }) }
@@ -78,11 +83,11 @@ exports.userLogin = async (req, res) => {
                 userId: checkUser._id.toString(),
                 batch: "Lithium"
             },
-            "SecretKey", { expiresIn: '5m' })
+            "SecretKey", { expiresIn: '5h' })
 
         res.setHeader('x-api-key', token)
 
-        return res.status(200).send({ status: true, data: { token: token, ExpiresIn: "Token is valid for 5 min from time of creation", IssuedAt: new Date() } })
+        return res.status(200).send({ status: true, data: { token: token, ExpiresIn: "Token is valid for 5 hours from time of creation", IssuedAt: new Date() } })
     }
     catch (err) {
         return res.status(500).send({ status: false, error: err.message })
