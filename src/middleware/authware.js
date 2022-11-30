@@ -34,18 +34,18 @@ exports.authorization = async (req, res, next) => {
 
         let tokenUserId = decodedToken.userId
 
-        let pathBlogId = req.params.blogId
+        let pathBookId = req.params.bookId
 
 
-        if (pathBlogId) {
+        if (pathBookId) {
             
-            let findBlog = await blogModel.findOne({ _id: pathBlogId })
+            let findBook = await bookModel.findOne({ _id: pathBookId })
 
-            if (Object.keys(findBlog).length == 0) {
+            if (Object.keys(findBook).length == 0) {
                 return res.status(404).send({ status: false, message: 'Book not found !' })
             }
 
-            let blogUserId = findBlog.UserId
+            let blogUserId = findBook.userId
 
             if (tokenUserId != blogUserId) {
                 return res.status(403).send({ status: false, message: 'You are not authorized !' })

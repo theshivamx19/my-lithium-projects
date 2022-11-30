@@ -122,17 +122,17 @@ exports.getBookById = async (req, res) => {
         let review = await ReviewModel.find({ isDeleted: false, bookId: bookId }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
 
         let data = {
-            _id: book._id,
-            title: book.title,
-            excerpt: book.excerpt,
-            userId: book.userId,
-            category: book.category,
+            _id:         book._id,
+            title:       book.title,
+            excerpt:     book.excerpt,
+            userId:      book.userId,
+            category:    book.category,
             subcategory: book.subcategory,
-            isDeleted: book.isDeleted,
-            reviews: book.releasedAt,
-            releasedAt: book.releasedAt,
-            createdAt: book.createdAt,
-            updatedAt: book.updatedAt,
+            isDeleted:   book.isDeleted,
+            reviews:     book.releasedAt,
+            releasedAt:  book.releasedAt,
+            createdAt:   book.createdAt,
+            updatedAt:   book.updatedAt,
             reviewsData: review
         }
 
@@ -188,8 +188,11 @@ exports.deleteBookById = async (req, res) => {
 
         if (!checkbook) { return res.status(404).send({ status: false, message: "No book exists with this BookId" }) }
 
-        await BookModel.findOneAndUpdate({ _id: bookId, isDeleted: false },
-            { $set: { isDeleted: true } })
+        await BookModel.deleteOne({ _id: bookId, isDeleted: false })
+        // await BookModel.findOneAndUpdate({ _id: bookId, isDeleted: false },
+        //     { $set: { isDeleted: true } })
+        
+        // await ReviewModel.find({isDeleted: false, bookId: bookId}).updateMany()
 
         return res.status(200).send({ status: true, message: "Successfully Deleted" })
     } 
