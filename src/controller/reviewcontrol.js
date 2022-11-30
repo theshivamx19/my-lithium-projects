@@ -22,15 +22,19 @@ exports.createReview = async (req, res) => {
         let bodyData = req.body
         let { bookId, reviewedAt, rating } = bodyData
 
-        if (bookIDinPath != bookId) {
-            return res.status(400).send({ status: false, message: "Book id must be same inside both path & body" })
-        }
+
         if (Object.keys(bodyData).length == 0) {
             return res.status(400).send({ status: false, message: "Body can not be empty" })
         }
+
         if (!bookId || bookId == "") {
             return res.status(400).send({ status: false, message: "Please enter bookId" })
         }
+
+        if (bookIDinPath != bookId) {
+            return res.status(400).send({ status: false, message: "Book id must be same inside both path & body" })
+        }
+
         if (!reviewedAt || reviewedAt.trim() == "") {
             return res.status(400).send({ status: false, message: "Please enter reviewedAt " })
         }
@@ -46,7 +50,7 @@ exports.createReview = async (req, res) => {
 
         let review = await reviewModel.create(bodyData)
 
-        let updatedBook = await bookModel.findOneAndUpdate({ isDeleted: false, _id: bookIDinPath }, { $inc: { reviews: 1 } }).lean()
+        let updatedBook = await bookModel.findOneAndUpdate({ _id: bookIDinPath, isDeleted: false }, { $inc: { reviews: 1 } }).lean()
 
         updatedBook.reviewsData = review
 
@@ -64,24 +68,26 @@ exports.updateReview = async (req, res) => {
         let data = req.body
 
         if (!mongoose.isValidObjectId(bookId)) {
-            return res.status(400).send({ status: false, message: "Pls provide a valid BookId" })
+            return res.status(400).send({ status: false, message: "Please provide a valid BookId" })
         }
+        if (!mongoose.isValidObjectId(reviewId)) {
+            return res.status(400).send({ status: false, message: "Please provide a valid Review Id" })
+        }
+
+
         let checkbook = await bookModel.findOne({ _id: bookId, isDeleted: false }).lean()
         if (!checkbook) {
             return res.status(404).send({ status: false, message: "No book exists with this Book Id" })
         }
 
 
-        if (!mongoose.isValidObjectId(reviewId)) {
-            return res.status(400).send({ status: false, message: "Pls provide a valid Review Id" })
-        }
         let checkReview = await reviewModel.findOne({ _id: reviewId, isDeleted: false })
         if (!checkReview) {
             return res.status(404).send({ status: false, message: "No review exists with this Review Id" })
         }
 
         if (bookId != checkReview.bookId) {
-            return res.status(400).send({ status: false, message: "No review exists for the given bookId and ReviewId" })
+            return res.status(400).send({ status: false, message: "Book id in path param & in review must be same" })
         }
 
 
@@ -94,7 +100,7 @@ exports.updateReview = async (req, res) => {
 
         checkbook.reviewsData = updateReview
 
-        return res.status(200).send({ status: false, message: "Success", data: checkbook })
+        return res.status(200).send({ status: true, message: "Success", data: checkbook })
     }
     catch (error) {
         return res.status(500).send({ status: false, message: error.message })
@@ -108,31 +114,32 @@ exports.deleteReview = async (req, res) => {
         let reviewId = req.params.reviewId
 
         if (!mongoose.isValidObjectId(bookId)) {
-            return res.status(400).send({ status: false, message: "Pls provide a valid BookId" })
+            return res.status(400).send({ status: false, message: "Please provide a valid BookId" })
         }
+        if (!mongoose.isValidObjectId(reviewId)) {
+            return res.status(400).send({ status: false, message: "Please provide a valid Review Id" })
+        }
+        
+        
         let checkbook = await bookModel.findOne({ _id: bookId, isDeleted: false })
         if (!checkbook) {
             return res.status(404).send({ status: false, message: "No book exists with this Book Id" })
-        }
-
-
-        if (!mongoose.isValidObjectId(reviewId)) {
-            return res.status(400).send({ status: false, message: "Pls provide a valid Review Id" })
         }
         let checkReview = await reviewModel.findOne({ _id: reviewId, isDeleted: false })
         if (!checkReview) {
             return res.status(404).send({ status: false, message: "No review exists with this Review Id" })
         }
 
+
         if (bookId != checkReview.bookId) {
-            return res.status(400).send({ status: false, message: "No review exists for the given bookId and ReviewId" })
+            return res.status(400).send({ status: false, message: "Book id in path param & in review must be same" })
         }
 
 
         await reviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false }, { $set: { isDeleted: true } })
         await bookModel.findOneAndUpdate({ _id: bookId, isDeleted: false }, { $inc: { reviews: -1 } })
 
-        return res.status(200).send({ status: false, message: "Success", data: "Review deleted successfully !" })
+        return res.status(200).send({ status: true, message: "Success", data: "Review deleted successfully !" })
     }
     catch (error) {
         return res.status(500).send({ status: false, message: error.message })
