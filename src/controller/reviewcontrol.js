@@ -129,7 +129,7 @@ exports.deleteReview = async (req, res) => {
         }
 
 
-        await reviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false }, { $set: { isDeleted: false } })
+        await reviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false }, { $set: { isDeleted: true } })
         await bookModel.findOneAndUpdate({ _id: bookId, isDeleted: false }, { $inc: { reviews: -1 } })
 
         return res.status(200).send({ status: false, message: "Success", data: "Review deleted successfully !" })
