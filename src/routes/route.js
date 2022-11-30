@@ -24,7 +24,7 @@ router.delete("/books/:bookId", authWare.authentication, authWare.authorization,
 
 router.post("/books/:bookId/review", reviewCtrl.createReview)
 router.put("/books/:bookId/review/:reviewId", reviewCtrl.updateReview)
-// router.delete("/books/:bookId/review/:reviewId", reviewCtrl)
+router.delete("/books/:bookId/review/:reviewId", reviewCtrl.deleteReview)
 
 
 module.exports = router
