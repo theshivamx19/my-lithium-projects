@@ -18,12 +18,12 @@ router.post("/login", userCtrl.userLogin)
 router.post("/books",authWare.authentication, authWare.authorization, bookCtrl.createBook)
 router.get("/books", authWare.authentication, bookCtrl.filterBookByQuery)
 router.get("/books/:bookId", authWare.authentication, bookCtrl.getBookById)
-router.put("/books/:bookId", bookCtrl)
+router.put("/books/:bookId", bookCtrl.updateBookById)
 router.delete("/books/:bookId", authWare.authentication, authWare.authorization, bookCtrl.deleteBookById)
 
 
 router.post("/books/:bookId/review", reviewCtrl.createReview)
-// router.put("/books/:bookId/review/:reviewId", reviewCtrl)
+router.put("/books/:bookId/review/:reviewId", reviewCtrl.updateReview)
 // router.delete("/books/:bookId/review/:reviewId", reviewCtrl)
 
 

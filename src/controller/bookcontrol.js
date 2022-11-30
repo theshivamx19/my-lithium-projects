@@ -26,7 +26,7 @@ exports.createBook = async (req, res) => {
         }
         let duplicacyCheck = await BookModel.findOne({ title: title })
         if (duplicacyCheck) {
-            return res.status(400).send({ status: false, message: "title is alredy present" })
+            return res.status(400).send({ status: false, message: "title is already present" })
         }
 
         if (!excerpt || excerpt.trim() == "") {
@@ -146,38 +146,54 @@ exports.getBookById = async (req, res) => {
 exports.updateBookById = async (req, res) => {
     try {
         let bookId = req.params.bookId
-        if (!isValidObjectId(bookId)) { return res.status(400).send({ status: false, message: "Pls provide a valid BookId" }) }
-        let bookExists = await BookModel.findOne({_id:bookId,isDeleted:false})
-        if(!bookExists){return res.status(404).send({status:false,message:"No book exist with this bookId"})}
+
+        if (!isValidObjectId(bookId)) { return res.status(400).send({ status: false, message: "Please provide a valid BookId" }) }
+
+        let bookExists = await BookModel.findOne({ _id: bookId, isDeleted: false })
+
+        if (!bookExists) { return res.status(404).send({ status: false, message: "No book exist with this bookId" }) }
+
         let data = req.body
-        if(Object.keys(data).length==0){return res.status(400).send({status:false,message:"Pls provide data in Body"})}
-        let {title,ISBN,excerpt,releasedAt}=data
-        if(title){
-            let checktitle = await BookModel.findOne({title})
-            if(checktitle){return res.status(400).send({status:false,message:"Pls provide a Unique title"})}
+
+        if (Object.keys(data).length == 0) { return res.status(400).send({ status: false, message: "Please provide data in Body" }) }
+
+        let { title, ISBN, excerpt, releasedAt } = data
+
+        if (title) {
+            let checkTitle = await BookModel.findOne({ title })
+            if (checkTitle) { return res.status(400).send({ status: false, message: "Please provide a Unique title" }) }
         }
-        if(ISBN){
-            let checkISBN = await BookModel.findOne({ISBN})
-            if(checkISBN){return res.status(400).send({status:false,message:"Pls provide a Unique ISBN"})} 
+        if (ISBN) {
+            let checkISBN = await BookModel.findOne({ ISBN })
+            if (checkISBN) { return res.status(400).send({ status: false, message: "Please provide a Unique ISBN" }) }
         }
-        let updateBookById = await BookModel.findOneAndUpdate({_id:bookId,isDeleted:false},
-            {$set:{title,ISBN,excerpt,releasedAt}},{new:true})
-            return res.status(200).send({status:true,message:'Success',data:updateBookById})
-    } catch (error) {
+
+        let updateBookById = await BookModel.findOneAndUpdate({ _id: bookId, isDeleted: false },
+            { $set: { title, ISBN, excerpt, releasedAt } }, { new: true })
+
+        return res.status(200).send({ status: true, message: 'Success', data: updateBookById })
+    }
+    catch (error) {
         return res.status(500).send({ status: false, message: error.message })
     }
 }
 
-exports.deleteBookByBookId = async (req, res) => {
+exports.deleteBookById = async (req, res) => {
     try {
         let bookId = req.params.bookId
-        if (!isValidObjectId(bookId)) { return res.status(400).send({ status: false, message: "Pls provide a valid book Id" }) }
+
+        if (!isValidObjectId(bookId)) { return res.status(400).send({ status: false, message: "Please provide a valid book Id" }) }
+
         let checkbook = await BookModel.findOne({ _id: bookId, isDeleted: false })
+
         if (!checkbook) { return res.status(404).send({ status: false, message: "No book exists with this BookId" }) }
+
         await BookModel.findOneAndUpdate({ _id: bookId, isDeleted: false },
             { $set: { isDeleted: true } })
+
         return res.status(200).send({ status: true, message: "Successfully Deleted" })
-    } catch (error) {
+    } 
+    catch (error) {
         return res.status(500).send({ status: false, message: error.message })
     }
 }
