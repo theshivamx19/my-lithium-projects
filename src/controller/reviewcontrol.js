@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
-const ReviewModel = require("../models/reviewmodel")
-const BookModel = require("../models/bookmodel")
+const reviewModel = require("../models/reviewmodel")
+const bookModel = require("../models/bookmodel")
 
 let dateRegex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/
 
@@ -14,7 +14,7 @@ exports.createReview = async (req, res) => {
             return res.status(400).send({ status: false, message: "Enter a valid book id" })
         }
 
-        let bookData = await BookModel.findOne({ isDeleted: false, _id: bookIDinPath })
+        let bookData = await bookModel.findOne({ isDeleted: false, _id: bookIDinPath })
 
         if (!bookData) return res.status(404).send({ status: false, message: "Book not found" })
 
@@ -44,9 +44,9 @@ exports.createReview = async (req, res) => {
             return res.status(400).send({ status: false, message: "Give a rating between 1 to 5" })
         }
 
-        let review = await ReviewModel.create(bodyData)
+        let review = await reviewModel.create(bodyData)
 
-        let updatedBook = await BookModel.findOneAndUpdate({ isDeleted: false, _id: bookIDinPath }, { $inc: { reviews: 1 } }).lean()
+        let updatedBook = await bookModel.findOneAndUpdate({ isDeleted: false, _id: bookIDinPath }, { $inc: { reviews: 1 } }).lean()
 
         updatedBook.reviewsData = review
 
@@ -70,7 +70,7 @@ exports.updateReview = async (req, res) => {
             return res.status(400).send({ status: false, message: "Pls provide a valid BookId" })
         }
 
-        let checkbook = await BookModel.findOne({ _id: bookId, isDeleted: false }).lean()
+        let checkbook = await bookModel.findOne({ _id: bookId, isDeleted: false }).lean()
 
         if (!checkbook) {
             return res.status(404).send({ status: false, message: "No book exists with this Book Id" })
@@ -79,7 +79,7 @@ exports.updateReview = async (req, res) => {
             return res.status(400).send({ status: false, message: "Pls provide a valid Review Id" })
         }
 
-        let checkReview = await ReviewModel.findOne({ _id: reviewId, isDeleted: false })
+        let checkReview = await reviewModel.findOne({ _id: reviewId, isDeleted: false })
 
         if (!checkReview) {
             return res.status(404).send({ status: false, message: "No review exists with this Review Id" })
@@ -87,7 +87,7 @@ exports.updateReview = async (req, res) => {
         if (bookId != checkReview.bookId) {
             return res.status(400).send({ status: false, message: "No review exists for the given bookId and ReviewId" })
         }
-        let updateReview = await ReviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false },
+        let updateReview = await reviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false },
             { $set: data }, { new: true })
 
 
