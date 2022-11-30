@@ -110,7 +110,7 @@ exports.deleteReview = async (req, res) => {
         if (!mongoose.isValidObjectId(bookId)) {
             return res.status(400).send({ status: false, message: "Pls provide a valid BookId" })
         }
-        let checkbook = await bookModel.findOne({ _id: bookId, isDeleted: false }).lean()
+        let checkbook = await bookModel.findOne({ _id: bookId, isDeleted: false })
         if (!checkbook) {
             return res.status(404).send({ status: false, message: "No book exists with this Book Id" })
         }
