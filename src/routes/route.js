@@ -11,14 +11,14 @@ const authWare = require("../middleware/authware")
 router.get("/servertest", (req, res) => res.send("Server is working fine !"))
 
 
-router.post("/register",  userCtrl.createUser)
+router.post("/register", userCtrl.createUser)
 router.post("/login", userCtrl.userLogin)
 
 
-router.post("/books",authWare.authentication, authWare.authorization, bookCtrl.createBook)
+router.post("/books", authWare.authentication, authWare.authorization, bookCtrl.createBook)
 router.get("/books", authWare.authentication, bookCtrl.filterBookByQuery)
 router.get("/books/:bookId", authWare.authentication, bookCtrl.getBookById)
-router.put("/books/:bookId", bookCtrl.updateBookById)
+router.put("/books/:bookId", authWare.authentication, authWare.authorization, bookCtrl.updateBookById)
 router.delete("/books/:bookId", authWare.authentication, authWare.authorization, bookCtrl.deleteBookById)
 
 

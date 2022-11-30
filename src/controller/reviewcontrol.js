@@ -19,18 +19,21 @@ exports.createReview = async (req, res) => {
         if (!bookData) return res.status(404).send({ status: false, message: "Book not found" })
 
 
-        let data = req.body
-        let { bookId, reviewedAt, rating } = data
+        let bodyData = req.body
+        let { bookId, reviewedAt, rating } = bodyData
 
-        if (Object.keys(data).length == 0) {
+        if (bookIDinPath != bookId) {
+            return res.status(400).send({ status: false, message: "Book id must be same inside both path & body" })
+        }
+        if (Object.keys(bodyData).length == 0) {
             return res.status(400).send({ status: false, message: "Body can not be empty" })
         }
         if (!bookId || bookId == "") {
             return res.status(400).send({ status: false, message: "Please enter bookId" })
         }
-        if (!reviewedAt || reviewedAt.trim() == "") 
+        if (!reviewedAt || reviewedAt.trim() == "") {
             return res.status(400).send({ status: false, message: "Please enter reviewedAt " })
-        
+        }
         if (!reviewedAt.match(dateRegex)) {
             return res.status(400).send({ status: false, message: "Please enter date in YYYY-MM-DD format" })
         }
@@ -41,12 +44,26 @@ exports.createReview = async (req, res) => {
             return res.status(400).send({ status: false, message: "Give a rating between 1 to 5" })
         }
 
+        let review = await ReviewModel.create(bodyData)
 
-        let reviewData = await ReviewModel.create(data)
+        let updatedBook = await BookModel.findOneAndUpdate({ isDeleted: false, _id: bookIDinPath }, { $inc: { reviews: 1 } })
 
-        await BookModel.updateOne({ isDeleted: false, _id: bookIDinPath }, { $set: { reviews: bookData.reviews + 1 } })
+        let bookReview = {
+            _id:         updatedBook._id,
+            title:       updatedBook.title,
+            excerpt:     updatedBook.excerpt,
+            userId:      updatedBook.userId,
+            category:    updatedBook.category,
+            subcategory: updatedBook.subcategory,
+            isDeleted:   updatedBook.isDeleted,
+            reviews:     updatedBook.reviews,
+            releasedAt:  updatedBook.releasedAt,
+            createdAt:   updatedBook.createdAt,
+            updatedAt:   updatedBook.updatedAt,
+            reviewsData: review
+        }
 
-        return res.status(201).send({ status: true, message: 'Success', data: reviewData })
+        return res.status(201).send({ status: true, message: 'Success', data: bookReview })
     }
     catch (error) {
         res.status(500).send({ status: false, message: error.message })
