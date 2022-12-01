@@ -20,9 +20,15 @@ exports.createBook = async (req, res) => {
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ status: false, message: "Body can not be empty" })
         }
+        title = title.trim()
+        ISBN = ISBN.trim()
+        userId = userId.trim()
+        excerpt = excerpt.trim()
+        category = category.trim()
+        subcategory = subcategory.trim()
+        releasedAt = releasedAt.trim()
 
-
-        if (!title || title.trim() == "") {
+        if (!title) {
             return res.status(400).send({ status: false, message: "Please enter title" })
         }
 
@@ -31,7 +37,7 @@ exports.createBook = async (req, res) => {
             if (unique.title == title) return res.status(400).send({ status: false, message: "title is already present" })
         }
 
-        if (!ISBN || ISBN.trim() == "") {
+        if (!ISBN) {
             return res.status(400).send({ status: false, message: "Please enter ISBN" })
         }
         if (!ISBNRegex.test(ISBN)) {
@@ -43,10 +49,10 @@ exports.createBook = async (req, res) => {
         }
 
 
-        if (!excerpt || excerpt.trim() == "") {
+        if (!excerpt) {
             return res.status(400).send({ status: false, message: "Please enter excerpt" })
         }
-        if (!userId || userId == "") {
+        if (!userId) {
             return res.status(400).send({ status: false, message: "Please enter user id" })
         }
         if (!isValidObjectId(userId)) {
@@ -57,15 +63,13 @@ exports.createBook = async (req, res) => {
             return res.status(400).send({ status: false, message: "User id do not exist" })
         }
 
-
-
-        if (!category || category.trim() == "") {
+        if (!category) {
             return res.status(400).send({ status: false, message: "Please enter the category of the book" })
         }
-        if (!subcategory || subcategory.trim() == "") {
+        if (!subcategory) {
             return res.status(400).send({ status: false, message: "Please enter subcategory" })
         }
-        if (!releasedAt || releasedAt.trim() == "") {
+        if (!releasedAt) {
             return res.status(400).send({ status: false, message: "Please enter release date of the book" })
         }
         if (!releasedAtRegex.test(releasedAt)) {
@@ -122,7 +126,6 @@ exports.getBookById = async (req, res) => {
 
         let book = await bookModel.findOne({ isDeleted: false, _id: bookId }).lean()
 
-
         if (!book) {
             return res.status(404).send({ status: false, message: "No data found !" })
         }
@@ -153,7 +156,10 @@ exports.updateBookById = async (req, res) => {
         if (Object.keys(data).length == 0) { return res.status(400).send({ status: false, message: "Please provide data in Body" }) }
 
         let { title, ISBN, excerpt, releasedAt } = data
-
+        title = title.trim()
+        ISBN = ISBN.trim()
+        excerpt = excerpt.trim()
+        releasedAt= releasedAt.trim()
 
         let unique = await bookModel.findOne({ $or: [{ title: title }, { ISBN: ISBN }] })
 

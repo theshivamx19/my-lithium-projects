@@ -21,7 +21,8 @@ exports.createReview = async (req, res) => {
 
         let bodyData = req.body
         let { bookId, reviewedAt, rating } = bodyData
-
+        bookId = bookId.trim()
+        reviewedAt = reviewedAt.trim()
 
         if (Object.keys(bodyData).length == 0) {
             return res.status(400).send({ status: false, message: "Body can not be empty" })
