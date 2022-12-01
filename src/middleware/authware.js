@@ -28,11 +28,9 @@ exports.authentication = function (req, res, next) {
 exports.authorization = async (req, res, next) => {
 
     try {
-        let token = req.headers["x-api-key"]
-
-        let decodedToken = jwt.verify(token, "SecretKey")
-
-        let tokenUserId = decodedToken.userId
+        //let token = req.headers["x-api-key"]
+        //let decodedToken = jwt.verify(token, "SecretKey") 
+        let tokenUserId = req.token.userId
 
         let pathBookId = req.params.bookId
 
@@ -44,9 +42,9 @@ exports.authorization = async (req, res, next) => {
                 return res.status(404).send({ status: false, message: 'Book not found !' })
             }
 
-            let blogUserId = findBook.userId
+            let bookUserId = findBook.userId
 
-            if (tokenUserId != blogUserId) {
+            if (tokenUserId != bookUserId) {
                 return res.status(403).send({ status: false, message: 'You are not authorized !' })
             }
             next()
