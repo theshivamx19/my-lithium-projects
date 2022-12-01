@@ -7,7 +7,6 @@ const reviewCtrl = require("../controller/reviewcontrol")
 const authWare = require("../middleware/authware")
 
 
-
 router.get("/servertest", (req, res) => res.send("Server is working fine !"))
 
 

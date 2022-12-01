@@ -13,6 +13,13 @@ mongoose.connect("mongodb+srv://new_user:jk1BBWwmxQpZ31zO@cluster0.pxvwsjp.mongo
     .then(() => console.log("MDB is connected"))
     .catch(err => console.log(err))
 
+
+app.use('/', function (req, res) {
+    res.status(404).send({ status: false, msg: "Url not found !!!" })
+})
+
 app.use('/', route)
 
+
 app.listen((3000), () => console.log("Server is running !"))
+
