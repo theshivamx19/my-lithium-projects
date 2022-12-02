@@ -15,16 +15,16 @@ exports.createUser = async (req, res) => {
             return res.status(400).send({ status: false, message: "Body can not be empty" })
         }
 
-        title = title.trim()
-        name = name.trim()
-        email = email.trim()
+        if (title) title = title.trim()
+        if (name) name = name.trim()
+        if (email) email = email.trim()
 
         if (!title) { return res.status(400).send({ status: false, message: "Title is mandatory" }) }
         if (!["Mr", "Mrs", "Miss"].includes(title)) { return res.status(400).send({ status: false, message: "Please provide a valid title - Mr , Mrs , Miss" }) }
         if (!name) { return res.status(400).send({ status: false, message: "Name is mandatory" }) }
         if (!name.match(nameValid)) { return res.status(400).send({ status: false, message: "Please provide a Valid name" }) }
         if (!phone) { return res.status(400).send({ status: false, message: "Phone number is mandatory" }) }
- 
+
         phone = String(phone)
         phone = phone.trim()
 
@@ -61,8 +61,8 @@ exports.createUser = async (req, res) => {
 exports.userLogin = async (req, res) => {
     try {
         let { email, password } = req.body
-        email = email.trim()
-        
+        if (email) email = email.trim()
+
         if (Object.keys(req.body).length == 0) {
             return res.status(400).send({ status: false, message: "Body can not be empty" })
         }

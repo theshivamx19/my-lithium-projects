@@ -21,14 +21,15 @@ exports.createReview = async (req, res) => {
 
         let bodyData = req.body
         let { bookId, reviewedAt, rating } = bodyData
-        bookId = bookId.trim()
-        reviewedAt = reviewedAt.trim()
+
+        if (bookId) bookId = bookId.trim()
+        if (reviewedAt) reviewedAt = reviewedAt.trim()
 
         if (Object.keys(bodyData).length == 0) {
             return res.status(400).send({ status: false, message: "Body can not be empty" })
         }
 
-        if (!bookId || bookId == "") {
+        if (!bookId) {
             return res.status(400).send({ status: false, message: "Please enter bookId" })
         }
 
@@ -36,7 +37,7 @@ exports.createReview = async (req, res) => {
             return res.status(400).send({ status: false, message: "Book id must be same inside both path & body" })
         }
 
-        if (!reviewedAt || reviewedAt.trim() == "") {
+        if (!reviewedAt) {
             return res.status(400).send({ status: false, message: "Please enter reviewedAt " })
         }
         if (!reviewedAt.match(dateRegex)) {
@@ -45,7 +46,7 @@ exports.createReview = async (req, res) => {
         if (!rating || rating == "") {
             return res.status(400).send({ status: false, message: "Please give rating" })
         }
-        if (rating < 1 || rating > 5) {
+        if (![1, 2, 3, 4, 5].includes(bodyData.rating)) {
             return res.status(400).send({ status: false, message: "Give a rating between 1 to 5" })
         }
 
@@ -92,9 +93,10 @@ exports.updateReview = async (req, res) => {
         }
 
 
-        if (data.rating < 1 || data.rating > 5) {
+        if (![1, 2, 3, 4, 5].includes(data.rating)) {
             return res.status(400).send({ status: false, message: "Give a rating between 1 to 5" })
         }
+
 
         let updateReview = await reviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false },
             { $set: data }, { new: true })
@@ -120,8 +122,8 @@ exports.deleteReview = async (req, res) => {
         if (!mongoose.isValidObjectId(reviewId)) {
             return res.status(400).send({ status: false, message: "Please provide a valid Review Id" })
         }
-        
-        
+
+
         let checkbook = await bookModel.findOne({ _id: bookId, isDeleted: false })
         if (!checkbook) {
             return res.status(404).send({ status: false, message: "No book exists with this Book Id" })

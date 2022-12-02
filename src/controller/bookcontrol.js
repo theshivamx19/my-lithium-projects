@@ -20,13 +20,13 @@ exports.createBook = async (req, res) => {
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ status: false, message: "Body can not be empty" })
         }
-        title = title.trim()
-        ISBN = ISBN.trim()
-        userId = userId.trim()
-        excerpt = excerpt.trim()
-        category = category.trim()
-        subcategory = subcategory.trim()
-        releasedAt = releasedAt.trim()
+        if (title) title = title.trim()
+        if (ISBN) ISBN = ISBN.trim()
+        if (userId) userId = userId.trim()
+        if (excerpt) excerpt = excerpt.trim()
+        if (category) category = category.trim()
+        if (subcategory) subcategory = subcategory.trim()
+        if (releasedAt) releasedAt = releasedAt.trim()
 
         if (!title) {
             return res.status(400).send({ status: false, message: "Please enter title" })
@@ -157,10 +157,11 @@ exports.updateBookById = async (req, res) => {
         if (Object.keys(data).length == 0) { return res.status(400).send({ status: false, message: "Please provide data in Body" }) }
 
         let { title, ISBN, excerpt, releasedAt } = data
-        title = title.trim()
-        ISBN = ISBN.trim()
-        excerpt = excerpt.trim()
-        releasedAt= releasedAt.trim()
+        
+        if (title) title = title.trim()
+        if (ISBN) ISBN = ISBN.trim()
+        if (excerpt) excerpt = excerpt.trim()
+        if (releasedAt) releasedAt = releasedAt.trim()
 
         let unique = await bookModel.findOne({ $or: [{ title: title }, { ISBN: ISBN }] })
 
