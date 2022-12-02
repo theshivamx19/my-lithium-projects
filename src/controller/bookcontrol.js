@@ -20,6 +20,7 @@ exports.createBook = async (req, res) => {
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ status: false, message: "Body can not be empty" })
         }
+
         if (title) title = title.trim()
         if (ISBN) ISBN = ISBN.trim()
         if (userId) userId = userId.trim()
@@ -111,7 +112,7 @@ exports.filterBookByQuery = async (req, res) => {
             }
         }
 
-        let filteredBook = await bookModel.find({ isDeleted: false, ...filterBy }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({title: 1})
+        let filteredBook = await bookModel.find({ isDeleted: false, ...filterBy }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
 
 
         if (Object.keys(filteredBook).length == 0) {
