@@ -38,7 +38,7 @@ exports.authorization = async (req, res, next) => {
 
             let findBook = await bookModel.findOne({ _id: pathBookId })
 
-            if (Object.keys(findBook).length == 0) {
+            if (!findBook) {
                 return res.status(404).send({ status: false, message: 'Book not found !' })
             }
 

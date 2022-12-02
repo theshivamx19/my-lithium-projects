@@ -14,11 +14,12 @@ mongoose.connect("mongodb+srv://new_user:jk1BBWwmxQpZ31zO@cluster0.pxvwsjp.mongo
     .catch(err => console.log(err))
 
 
+app.use('/', route)
+
 app.use('/', function (req, res) {
-    res.status(404).send({ status: false, msg: "Url not found !!!" })
+    res.status(404).send({ status: false, message: "Url not found !!!" })
 })
 
-app.use('/', route)
 
 
 app.listen((3000), () => console.log("Server is running !"))

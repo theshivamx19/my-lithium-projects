@@ -60,7 +60,7 @@ exports.createUser = async (req, res) => {
 
 exports.userLogin = async (req, res) => {
     try {
-        const { email, password } = req.body
+        let { email, password } = req.body
         email = email.trim()
         
         if (Object.keys(req.body).length == 0) {
@@ -77,7 +77,7 @@ exports.userLogin = async (req, res) => {
             return res.status(400).send({ status: false, message: 'Enter valid email' })
         }
 
-        const checkUser = await UserModel.findOne({ email: email, password: password })
+        let checkUser = await UserModel.findOne({ email: email, password: password })
         if (!checkUser) {
             return res.status(401).send({ status: false, message: 'email or password is incorrect' })
         }
