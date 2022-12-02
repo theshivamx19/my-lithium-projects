@@ -8,7 +8,7 @@ const { isValidObjectId } = mongoose
 //this regex is used for both 10 & 13 number digit and also including hyphen(-) 
 let ISBNRegex = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/
 
-let releasedAtRegex = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
+let dateRegex = /^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/
 
 
 exports.createBook = async (req, res) => {
@@ -32,7 +32,7 @@ exports.createBook = async (req, res) => {
             return res.status(400).send({ status: false, message: "Please enter title" })
         }
 
-        let unique = await userModel.findOne({ $or: [{ title: title }, { ISBN: ISBN }] })
+        let unique = await bookModel.findOne({ $or: [{ title: title }, { ISBN: ISBN }] })
         if (unique) {
             if (unique.title == title) return res.status(400).send({ status: false, message: "title is already present" })
         }
@@ -72,9 +72,16 @@ exports.createBook = async (req, res) => {
         if (!releasedAt) {
             return res.status(400).send({ status: false, message: "Please enter release date of the book" })
         }
-        if (!releasedAtRegex.test(releasedAt)) {
+        if (!dateRegex.test(releasedAt)) {
             return res.status(400).send({ status: false, message: "Invalid date formate. (YYYY-MM-DD)" })
         }
+
+        let toDay = new Date().toISOString().split('T')[0]
+
+        if (releasedAt != toDay) {
+            return res.status(400).send({ status: false, message: "Please provide today's date" })
+        }
+
 
         let bookData = await bookModel.create(data)
 
@@ -104,16 +111,15 @@ exports.filterBookByQuery = async (req, res) => {
             }
         }
 
-        let filteredBook = await bookModel.find({ isDeleted: false, ...filterBy }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 })
+        let filteredBook = await bookModel.find({ isDeleted: false, ...filterBy }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({title: 1})
 
-        let sortedBook = filteredBook.sort((a, b) => a.title.localeCompare(b.title))
 
         if (Object.keys(filteredBook).length == 0) {
             return res.status(404).send({ status: false, message: "No data found !" })
         }
 
 
-        res.status(200).send({ status: true, message: 'Books list', data: sortedBook })
+        res.status(200).send({ status: true, message: 'Books list', data: filteredBook })
     }
     catch (error) {
         res.status(500).send({ status: false, message: error.message })
@@ -157,7 +163,7 @@ exports.updateBookById = async (req, res) => {
         if (Object.keys(data).length == 0) { return res.status(400).send({ status: false, message: "Please provide data in Body" }) }
 
         let { title, ISBN, excerpt, releasedAt } = data
-        
+
         if (title) title = title.trim()
         if (ISBN) ISBN = ISBN.trim()
         if (excerpt) excerpt = excerpt.trim()
@@ -193,7 +199,7 @@ exports.deleteBookById = async (req, res) => {
         if (!checkbook) { return res.status(404).send({ status: false, message: "No book exists with this BookId" }) }
 
         await bookModel.findOneAndUpdate({ _id: bookId, isDeleted: false },
-            { $set: { isDeleted: true, reviews: 0 } })
+            { $set: { isDeleted: true, deletedAt: new Date(), reviews: 0 } })
 
         await reviewModel.updateMany({ isDeleted: false, bookId: bookId }, { $set: { isDeleted: true } })
 
