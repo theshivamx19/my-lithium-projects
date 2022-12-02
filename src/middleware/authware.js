@@ -6,12 +6,16 @@ const bookModel = require('../models/bookmodel')
 exports.authentication = function (req, res, next) {
     try {
         let token = req.headers["x-api-key"]
-        // console.log(token)
+        
         if (!token) return res.status(400).send({ status: false, message: "token must be present" });
 
         jwt.verify(token, "SecretKey", function (err, decodedToken) {
+
             if (err) {
-                return res.status(401).send({ status: false, message: "token invalid" })
+
+                let message = err.message === "jwt expired"?"Token is expired":"Token is invalid"
+
+                return res.status(401).send({ status: false, message: message })
             }
             else {
                 req.token = decodedToken
@@ -27,9 +31,7 @@ exports.authentication = function (req, res, next) {
 
 exports.authorization = async (req, res, next) => {
 
-    try {
-        //let token = req.headers["x-api-key"]
-        //let decodedToken = jwt.verify(token, "SecretKey") 
+    try { 
         let tokenUserId = req.token.userId
 
         let pathBookId = req.params.bookId

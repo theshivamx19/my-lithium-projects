@@ -10,13 +10,13 @@ exports.createReview = async (req, res) => {
         let bookIDinPath = req.params.bookId
 
         let valid = mongoose.Types.ObjectId.isValid(bookIDinPath)
-        if (valid == false) {
+        if (!valid) {
             return res.status(400).send({ status: false, message: "Enter a valid book id" })
         }
 
         let bookData = await bookModel.findOne({ isDeleted: false, _id: bookIDinPath })
 
-        if (!bookData) return res.status(404).send({ status: false, message: "Book not found" })
+        if (!bookData) return res.status(404).send({ status: false, message: "Book not found with this book ID" })
 
 
         let bodyData = req.body
