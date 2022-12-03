@@ -132,12 +132,15 @@ exports.getBookById = async (req, res) => {
 
     try {
         let bookId = req.params.bookId
-
+        if(!isValidObjectId(bookId)){
+            return res.status(400).send({status: false, message: "invalid bookId"})
+        }
         let book = await bookModel.findOne({ isDeleted: false, _id: bookId }).lean()
 
         if (!book) {
             return res.status(404).send({ status: false, message: "No data found !" })
         }
+        
 
         let review = await reviewModel.find({ isDeleted: false, bookId: bookId }).select({ bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
 
