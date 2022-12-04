@@ -203,10 +203,10 @@ exports.deleteBookById = async (req, res) => {
 
         if (!checkbook) { return res.status(404).send({ status: false, message: "No book exists with this BookId" }) }
 
-        await bookModel.findOneAndUpdate({ _id: bookId, isDeleted: false },
+        let bookDeleteById = await bookModel.findOneAndUpdate({ _id: bookId, isDeleted: false },
             { $set: { isDeleted: true, deletedAt: new Date(), reviews: 0 } })
 
-        await reviewModel.updateMany({ isDeleted: false, bookId: bookId }, { $set: { isDeleted: true } })
+        let reviewDelete = await reviewModel.updateMany({ isDeleted: false, bookId: bookId }, { $set: { isDeleted: true } })
 
         return res.status(200).send({ status: true, message: "Successfully Deleted" })
     }
