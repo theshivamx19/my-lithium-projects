@@ -36,11 +36,11 @@ exports.createUser = async (req, res) => {
             if (unique.phone == phone) return res.status(400).send({ status: false, message: "Please provide a Unique phone" })
         }
 
-        data.email = email.toLowerCase()
+       
 
         if (!email) { return res.status(400).send({ status: false, message: "Email is mandatory" }) }
         if (!email.match(emailValid)) { return res.status(400).send({ status: false, message: "Please provide a valid email" }) }
-
+        data.email = email.toLowerCase()
         if (unique) {
             if (unique.email == email) return res.status(400).send({ status: false, message: "Please provide a unique email" })
         }
