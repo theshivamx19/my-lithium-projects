@@ -91,9 +91,16 @@ exports.updateReview = async (req, res) => {
         if (bookId != checkReview.bookId) {
             return res.status(400).send({ status: false, message: "Book id in path param & in review must be same" })
         }
-
+        const isFilled = function(value){
+            if(typeof value === "string" && value.trim().length === 0) return false;
+             return true 
+         }
+         if(!isFilled(data.rating)){
+            return res.status(400).send({ status: false, message: "rating can not be empty" })
+         }
         if(data.rating ){
-        if (![1, 2, 3, 4, 5].includes(data.rating)) {
+            if(data.rating)rating = data.rating.toString() 
+        if (!["1", "2", "3", "4", "5"].includes(data.rating)) {
             return res.status(400).send({ status: false, message: "Give a rating between 1 to 5" })
         }
     }
