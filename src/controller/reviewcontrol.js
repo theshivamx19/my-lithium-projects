@@ -92,10 +92,11 @@ exports.updateReview = async (req, res) => {
             return res.status(400).send({ status: false, message: "Book id in path param & in review must be same" })
         }
 
-
+        if(data.rating ){
         if (![1, 2, 3, 4, 5].includes(data.rating)) {
             return res.status(400).send({ status: false, message: "Give a rating between 1 to 5" })
         }
+    }
 
 
         let updateReview = await reviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false },
