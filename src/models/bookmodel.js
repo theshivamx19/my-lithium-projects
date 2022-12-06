@@ -49,6 +49,9 @@ const bookSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    bookCover: {
+        type: String
+    },
     releasedAt: {
         type: Date,
         require: true,
