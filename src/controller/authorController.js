@@ -34,9 +34,9 @@ const authorData = async function (req, res) {
     if (firstName == false || lastName == false) {
       return res.status(400).send({ msg: "Special characters are not allowed in firstName and lastName" })
     }
-    if (title != "Mr" && title != "Miss" && title != "Mrs") {
-      return res.status(400).send({ msg: "title can not be onther than this" })
-    }
+    
+
+if(!["Mr","Miss","Mrs"].includes(title)){return res.status(400).send({msg:false,status:"title is wrong"})}
 
     const isEmailAlreadyUsed = await authorModel.findOne({ email });
     if (isEmailAlreadyUsed) {
