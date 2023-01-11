@@ -63,61 +63,6 @@ exports.createReview = async (req, res) => {
     }
 }
 
-exports.updateReview = async (req, res) => {
-    try {
-        let bookId = req.params.bookId
-        let reviewId = req.params.reviewId
-        let data = req.body
-
-        if (!mongoose.isValidObjectId(bookId)) {
-            return res.status(400).send({ status: false, message: "Please provide a valid BookId" })
-        }
-        if (!mongoose.isValidObjectId(reviewId)) {
-            return res.status(400).send({ status: false, message: "Please provide a valid Review Id" })
-        }
-
-
-        let checkbook = await bookModel.findOne({ _id: bookId, isDeleted: false }).lean()
-        if (!checkbook) {
-            return res.status(404).send({ status: false, message: "No book exists with this Book Id" })
-        }
-
-
-        let checkReview = await reviewModel.findOne({ _id: reviewId, isDeleted: false })
-        if (!checkReview) {
-            return res.status(404).send({ status: false, message: "No review exists with this Review Id" })
-        }
-
-        if (bookId != checkReview.bookId) {
-            return res.status(400).send({ status: false, message: "Book id in path param & in review must be same" })
-        }
-        const isFilled = function(value){
-            if(typeof value === "string" && value.trim().length === 0) return false;
-             return true 
-         }
-         if(!isFilled(data.rating)){
-            return res.status(400).send({ status: false, message: "rating can not be empty" })
-         }
-        if(data.rating ){
-            if(data.rating)rating = data.rating.toString() 
-        if (!["1", "2", "3", "4", "5"].includes(data.rating)) {
-            return res.status(400).send({ status: false, message: "Give a rating between 1 to 5" })
-        }
-    }
-
-
-        let updateReview = await reviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false },
-            { $set: data }, { new: true })
-
-        checkbook.reviewsData = updateReview
-
-        return res.status(200).send({ status: true, message: "Success", data: checkbook })
-    }
-    catch (error) {
-        return res.status(500).send({ status: false, message: error.message })
-    }
-}
-
 
 exports.deleteReview = async (req, res) => {
     try {
